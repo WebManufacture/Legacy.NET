@@ -1,0 +1,6 @@
+D:\Projects\Trash\LPT\LPTStepMotor\bin\Debug\LPTStepMotor.dll
+D:\Projects\Trash\LPT\LPTStepMotor\bin\Debug\LPTStepMotor.pdb
+D:\Projects\Trash\LPT\LPTStepMotor\obj\Debug\LPTStepMotor.dll
+D:\Projects\Trash\LPT\LPTStepMotor\obj\Debug\LPTStepMotor.pdb
+D:\Projects\Trash\LPT\LPTStepMotor\bin\Debug\INPOUT32.DLL
+D:\Projects\Trash\LPT\LPTStepMotor\bin\Debug\hwinterface.ocx

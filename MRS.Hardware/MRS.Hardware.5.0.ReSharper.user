@@ -1,0 +1,153 @@
+<Configuration>
+  <SettingsComponent>
+    <string />
+    <integer />
+    <boolean>
+      <setting name="livetemplates.csharp.usevar">True</setting>
+      <setting name="SolutionAnalysisEnabled">False</setting>
+    </boolean>
+  </SettingsComponent>
+  <RecentFiles>
+    <RecentFiles>
+      <File id="B57E5797-264C-429E-B56C-9522365E32AD/f:VusbManager.cs" caret="11028" fromTop="27" />
+      <File id="CFC8A5E8-2B3E-4167-BC99-8D26D201A40F/f:Program.cs" caret="1383" fromTop="29" />
+    </RecentFiles>
+    <RecentEdits>
+      <File id="B57E5797-264C-429E-B56C-9522365E32AD/f:VusbManager.cs" caret="472" fromTop="29" />
+      <File id="B57E5797-264C-429E-B56C-9522365E32AD/f:VusbManager.cs" caret="472" fromTop="9" />
+      <File id="B57E5797-264C-429E-B56C-9522365E32AD/f:VusbManager.cs" caret="472" fromTop="33" />
+      <File id="B57E5797-264C-429E-B56C-9522365E32AD/f:VusbManager.cs" caret="472" fromTop="29" />
+      <File id="B57E5797-264C-429E-B56C-9522365E32AD/f:VusbManager.cs" caret="10898" fromTop="18" />
+      <File id="B57E5797-264C-429E-B56C-9522365E32AD/f:VusbManager.cs" caret="472" fromTop="17" />
+      <File id="B57E5797-264C-429E-B56C-9522365E32AD/f:VusbManager.cs" caret="390" fromTop="6" />
+      <File id="B57E5797-264C-429E-B56C-9522365E32AD/f:VusbManager.cs" caret="390" fromTop="10" />
+      <File id="B57E5797-264C-429E-B56C-9522365E32AD/f:VusbManager.cs" caret="403" fromTop="10" />
+      <File id="B57E5797-264C-429E-B56C-9522365E32AD/f:VusbManager.cs" caret="9234" fromTop="16" />
+      <File id="B57E5797-264C-429E-B56C-9522365E32AD/f:VusbManager.cs" caret="9717" fromTop="21" />
+      <File id="B57E5797-264C-429E-B56C-9522365E32AD/f:VusbManager.cs" caret="10343" fromTop="33" />
+      <File id="B57E5797-264C-429E-B56C-9522365E32AD/f:VusbManager.cs" caret="10949" fromTop="22" />
+      <File id="B57E5797-264C-429E-B56C-9522365E32AD/f:VusbManager.cs" caret="1735" fromTop="38" />
+      <File id="B57E5797-264C-429E-B56C-9522365E32AD/f:VusbManager.cs" caret="12045" fromTop="26" />
+      <File id="B57E5797-264C-429E-B56C-9522365E32AD/f:VusbManager.cs" caret="12151" fromTop="30" />
+      <File id="B57E5797-264C-429E-B56C-9522365E32AD/f:VusbManager.cs" caret="12339" fromTop="34" />
+      <File id="B57E5797-264C-429E-B56C-9522365E32AD/f:VusbManager.cs" caret="11808" fromTop="20" />
+      <File id="B57E5797-264C-429E-B56C-9522365E32AD/f:VusbManager.cs" caret="11239" fromTop="28" />
+      <File id="CFC8A5E8-2B3E-4167-BC99-8D26D201A40F/f:Program.cs" caret="773" fromTop="6" />
+      <File id="CFC8A5E8-2B3E-4167-BC99-8D26D201A40F/f:Program.cs" caret="773" fromTop="15" />
+      <File id="CFC8A5E8-2B3E-4167-BC99-8D26D201A40F/f:Program.cs" caret="637" fromTop="10" />
+      <File id="CFC8A5E8-2B3E-4167-BC99-8D26D201A40F/f:Program.cs" caret="684" fromTop="10" />
+      <File id="CFC8A5E8-2B3E-4167-BC99-8D26D201A40F/f:Program.cs" caret="732" fromTop="11" />
+      <File id="CFC8A5E8-2B3E-4167-BC99-8D26D201A40F/f:Program.cs" caret="1157" fromTop="21" />
+      <File id="CFC8A5E8-2B3E-4167-BC99-8D26D201A40F/f:Program.cs" caret="90" fromTop="0" />
+      <File id="CFC8A5E8-2B3E-4167-BC99-8D26D201A40F/f:Program.cs" caret="261" fromTop="11" />
+      <File id="CFC8A5E8-2B3E-4167-BC99-8D26D201A40F/f:Program.cs" caret="1278" fromTop="34" />
+      <File id="CFC8A5E8-2B3E-4167-BC99-8D26D201A40F/f:Program.cs" caret="2893" fromTop="39" />
+      <File id="CFC8A5E8-2B3E-4167-BC99-8D26D201A40F/f:Program.cs" caret="1522" fromTop="26" />
+    </RecentEdits>
+  </RecentFiles>
+  <NAntValidationSettings>
+    <NAntPath value="" />
+  </NAntValidationSettings>
+  <UnitTestRunner>
+    <Providers />
+  </UnitTestRunner>
+  <UnitTestRunnerNUnit>
+    <NUnitInstallDir IsNull="False">
+    </NUnitInstallDir>
+    <UseAddins>Never</UseAddins>
+  </UnitTestRunnerNUnit>
+  <CompletionStatisticsManager>
+    <ItemStatistics item="Default">
+      <Item value="public" priority="6" />
+      <Item value="int" priority="2" />
+      <Item value="index" priority="0" />
+      <Item value="return" priority="3" />
+      <Item value="buffer" priority="0" />
+      <Item value="static" priority="1" />
+      <Item value="protected" priority="1" />
+      <Item value="string" priority="6" />
+      <Item value="internal" priority="1" />
+      <Item value="UsbBus`0" priority="0" />
+      <Item value="List" priority="0" />
+      <Item value="names" priority="0" />
+      <Item value="bus" priority="2" />
+      <Item value="manager" priority="9" />
+      <Item value="new" priority="2" />
+      <Item value="VusbManager`0" priority="0" />
+      <Item value="if" priority="3" />
+      <Item value="Console`0" priority="5" />
+      <Item value="message" priority="0" />
+      <Item value="while" priority="1" />
+      <Item value="null" priority="1" />
+      <Item value="input" priority="2" />
+      <Item value="else" priority="0" />
+      <Item value="USB_TYPE_VENDOR" priority="0" />
+      <Item value="USB_CUSTOM_RQ_SET" priority="0" />
+      <Item value="byte" priority="1" />
+      <Item value="value" priority="0" />
+      <Item value="for" priority="1" />
+      <Item value="Random`0" priority="0" />
+      <Item value="Random" priority="0" />
+      <Item value="HIDLibrary" priority="3" />
+      <Item value="HidDevice`0" priority="2" />
+      <Item value="HidDevices`0" priority="2" />
+      <Item value="foreach" priority="0" />
+      <Item value="hidDevice" priority="2" />
+      <Item value="var" priority="0" />
+      <Item value="devID" priority="0" />
+      <Item value="break" priority="0" />
+      <Item value="report" priority="1" />
+      <Item value="Length" priority="0" />
+      <Item value="MRS.Hardware" priority="0" />
+      <Item value="Test" priority="0" />
+      <Item value="VUSB" priority="0" />
+    </ItemStatistics>
+    <ItemStatistics item="Qualified:System.Collections.Generic.List`1">
+      <Item value="Add`0" priority="0" />
+    </ItemStatistics>
+    <ItemStatistics item="Qualified:MRS.Hardware.VusbManager+usb_bus">
+      <Item value="filename" priority="0" />
+    </ItemStatistics>
+    <ItemStatistics item="Qualified:@System.String">
+      <Item value="Join`0" priority="0" />
+    </ItemStatistics>
+    <ItemStatistics item="Qualified:@MRS.Hardware.VusbManager">
+      <Item value="usb_interface`0" priority="0" />
+    </ItemStatistics>
+    <ItemStatistics item="Qualified:MRS.Hardware.VUSB.VusbManager">
+      <Item value="IsOpen`0" priority="0" />
+      <Item value="Close`0" priority="0" />
+      <Item value="GetMessage`0" priority="1" />
+      <Item value="SendMessage`0" priority="0" />
+    </ItemStatistics>
+    <ItemStatistics item="Qualified:@System.Console">
+      <Item value="WriteLine`0" priority="3" />
+      <Item value="ReadLine`0" priority="1" />
+      <Item value="Write`0" priority="0" />
+    </ItemStatistics>
+    <ItemStatistics item="Qualified:System.String">
+      <Item value="ToLower`0" priority="0" />
+    </ItemStatistics>
+    <ItemStatistics item="Qualified:System.Random">
+      <Item value="Next`0" priority="0" />
+    </ItemStatistics>
+    <ItemStatistics item="Qualified:@HIDLibrary.HidDevices">
+      <Item value="Enumerate`0" priority="0" />
+      <Item value="GetDevice`0" priority="1" />
+    </ItemStatistics>
+    <ItemStatistics item="Qualified:HIDLibrary.HidDevice">
+      <Item value="Description" priority="1" />
+      <Item value="Open`0" priority="2" />
+      <Item value="Attributes" priority="0" />
+      <Item value="Capabilities" priority="0" />
+      <Item value="DevicePath" priority="1" />
+      <Item value="Close`0" priority="0" />
+      <Item value="IsConnected" priority="0" />
+      <Item value="ReadReport`0" priority="0" />
+      <Item value="IsOpen" priority="0" />
+    </ItemStatistics>
+    <ItemStatistics item="Qualified:HIDLibrary.HidReport">
+      <Item value="Data" priority="2" />
+    </ItemStatistics>
+  </CompletionStatisticsManager>
+</Configuration>

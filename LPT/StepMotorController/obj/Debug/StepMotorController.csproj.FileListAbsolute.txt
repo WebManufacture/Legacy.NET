@@ -1,0 +1,12 @@
+D:\Projects\Trash\LPT\StepMotorController\bin\Debug\StepMotorController.exe
+D:\Projects\Trash\LPT\StepMotorController\bin\Debug\StepMotorController.pdb
+D:\Projects\Trash\LPT\StepMotorController\bin\Debug\LPTStepMotor.dll
+D:\Projects\Trash\LPT\StepMotorController\bin\Debug\LPTStepMotor.pdb
+D:\Projects\Trash\LPT\StepMotorController\obj\Debug\ResolveAssemblyReference.cache
+D:\Projects\Trash\LPT\StepMotorController\obj\Debug\StepMotorController.Form1.resources
+D:\Projects\Trash\LPT\StepMotorController\obj\Debug\StepMotorController.Properties.Resources.resources
+D:\Projects\Trash\LPT\StepMotorController\obj\Debug\StepMotorController.csproj.GenerateResource.Cache
+D:\Projects\Trash\LPT\StepMotorController\obj\Debug\StepMotorController.exe
+D:\Projects\Trash\LPT\StepMotorController\obj\Debug\StepMotorController.pdb
+D:\Projects\Trash\LPT\StepMotorController\bin\Debug\INPOUT32.DLL
+D:\Projects\Trash\LPT\StepMotorController\bin\Debug\hwinterface.ocx

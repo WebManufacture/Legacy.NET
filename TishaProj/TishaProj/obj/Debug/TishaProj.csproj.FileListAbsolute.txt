@@ -1,0 +1,9 @@
+D:\EL-WIN\HLab.eBox\TishaProj\TishaProj\bin\Debug\TishaProj.exe.config
+D:\EL-WIN\HLab.eBox\TishaProj\TishaProj\obj\Debug\TishaProj.csprojResolveAssemblyReference.cache
+D:\EL-WIN\HLab.eBox\TishaProj\TishaProj\obj\Debug\TishaProj.Form1.resources
+D:\EL-WIN\HLab.eBox\TishaProj\TishaProj\obj\Debug\TishaProj.Properties.Resources.resources
+D:\EL-WIN\HLab.eBox\TishaProj\TishaProj\obj\Debug\TishaProj.csproj.GenerateResource.Cache
+D:\EL-WIN\HLab.eBox\TishaProj\TishaProj\bin\Debug\TishaProj.exe
+D:\EL-WIN\HLab.eBox\TishaProj\TishaProj\bin\Debug\TishaProj.pdb
+D:\EL-WIN\HLab.eBox\TishaProj\TishaProj\obj\Debug\TishaProj.exe
+D:\EL-WIN\HLab.eBox\TishaProj\TishaProj\obj\Debug\TishaProj.pdb

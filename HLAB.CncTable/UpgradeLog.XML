@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?><?xml-stylesheet type='text/xsl' href='_UpgradeReport_Files/UpgradeReport.xslt'?><UpgradeLog>
+<Properties><Property Name="Solution" Value="HLAB.CncTable">
+</Property><Property Name="Solution File" Value="D:\EL-WIN\HLAB.CncTable\HLAB.CncTable.sln">
+</Property><Property Name="Date" Value="26 октября 2012 г.">
+</Property><Property Name="Time" Value="19:40:20">
+</Property></Properties><Event ErrorLevel="0" Project="MRS.Hardware.HTTPServer" Source="HTTPServer\MRS.Hardware.HTTPServer.csproj" Description="Project converted successfully">
+</Event><Event ErrorLevel="3" Project="MRS.Hardware.HTTPServer" Source="HTTPServer\MRS.Hardware.HTTPServer.csproj" Description="Converted">
+</Event><Event ErrorLevel="0" Project="MRS.Hardware.HTTPServer" Source="HTTPServer\MRS.Hardware.HTTPServer.csproj" Description="Scan complete: Upgrade not required for project files.">
+</Event></UpgradeLog>
