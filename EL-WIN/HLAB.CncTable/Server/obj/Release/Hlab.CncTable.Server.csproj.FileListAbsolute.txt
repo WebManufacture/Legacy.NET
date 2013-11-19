@@ -1,0 +1,9 @@
+D:\EL-WIN\HLAB.CncTable\Server\bin\Release\MRS.Hardware.Server.dll
+D:\EL-WIN\HLAB.CncTable\Server\bin\Release\MRS.Hardware.Server.pdb
+D:\EL-WIN\HLAB.CncTable\Server\bin\Release\log4net.dll
+D:\EL-WIN\HLAB.CncTable\Server\bin\Release\Newtonsoft.Json.dll
+D:\EL-WIN\HLAB.CncTable\Server\bin\Release\Newtonsoft.Json.pdb
+D:\EL-WIN\HLAB.CncTable\Server\bin\Release\Newtonsoft.Json.xml
+D:\EL-WIN\HLAB.CncTable\Server\obj\Release\ResolveAssemblyReference.cache
+D:\EL-WIN\HLAB.CncTable\Server\obj\Release\MRS.Hardware.Server.dll
+D:\EL-WIN\HLAB.CncTable\Server\obj\Release\MRS.Hardware.Server.pdb

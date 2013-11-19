@@ -1,0 +1,26 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LPTStepMotor", "LPTStepMotor\LPTStepMotor.csproj", "{B4CC092D-CC84-46C5-A583-6472A3D88165}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StepMotorController", "StepMotorController\StepMotorController.csproj", "{6B53463F-FE23-4B99-AE8D-468C0330D9BB}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{B4CC092D-CC84-46C5-A583-6472A3D88165}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B4CC092D-CC84-46C5-A583-6472A3D88165}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B4CC092D-CC84-46C5-A583-6472A3D88165}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B4CC092D-CC84-46C5-A583-6472A3D88165}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6B53463F-FE23-4B99-AE8D-468C0330D9BB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6B53463F-FE23-4B99-AE8D-468C0330D9BB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6B53463F-FE23-4B99-AE8D-468C0330D9BB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6B53463F-FE23-4B99-AE8D-468C0330D9BB}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

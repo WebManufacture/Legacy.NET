@@ -33,6 +33,7 @@ namespace HLab.eBox
         public SimpleInvokeMethod showTaskMethod;
         public SimpleInvokeMethod showSettingsMethod;
         public SimpleInvokeMethod writeCompleteMethod;
+        public SimpleInvokeMethod writeProgressMethod;
 
         public fmMain()
         {
@@ -55,6 +56,7 @@ namespace HLab.eBox
             showTaskMethod = showTask;
             showSettingsMethod = showSettings;
             writeCompleteMethod = writeComplete;
+            writeProgressMethod = writeProgress;
             OnDeviceStateChange(EDeviceState.Offline);
             pnlControls.Enabled = false;
             cbStartMode.SelectedIndex = 0;
@@ -71,7 +73,7 @@ namespace HLab.eBox
                 OnDeviceStateChange(EDeviceState.Offline);
 
             }
-            port = new Serial(cbPort.SelectedItem + "", 115200, Parity.None, 8, StopBits.One, 1000);
+            port = new Serial(cbPort.SelectedItem + "", 115200, paritySel.Checked ? Parity.Odd : Parity.None, 8, StopBits.One, 1000);
             port.OnReceive += port_OnReceive;
             var error = port.Connect();
             if (error == "ok")
@@ -163,11 +165,13 @@ namespace HLab.eBox
         void showTask()
         {
             tbReaded.Text += "P" + readedTask.Port + " ";
+            var value = readedTask.PercentValue;
             switch (readedTask.TaskType){
                 case TaskTypes.pin : tbReaded.Text += "V"; break;
-                case TaskTypes.system : tbReaded.Text += "D"; break;
+                case TaskTypes.pwmDown: tbReaded.Text += "D"; value = readedTask.value; break;
+                case TaskTypes.pwmUp: tbReaded.Text += "U"; value = readedTask.value; break;
             }
-            tbReaded.Text += readedTask.PercentValue + " S" + readedTask.start + "\r\n";
+            tbReaded.Text += value + " S" + readedTask.start + "\r\n";
         }
 
         void writeComplete()
@@ -175,6 +179,10 @@ namespace HLab.eBox
             lblError.Text = "Write complete";
         }
 
+        void writeProgress()
+        {
+            lblError.Text = "Записано " + currentTask + " из " + TaskList.Count;
+        }
 
         void port_OnReceive(byte[] data)
         {
@@ -211,6 +219,7 @@ namespace HLab.eBox
                 if (TaskList != null && currentTask < TaskList.Count)
                 {
                     addr++;
+                    Invoke(writeProgressMethod);
                     SendCommand(UartCommand.set, addr, TaskList[currentTask]);
                     currentTask++;
                 }
@@ -411,14 +420,6 @@ namespace HLab.eBox
                     {
                         item = item.Remove(0, 1);
                         task.start = ushort.Parse(item);
-                        continue;
-                    }
-                    if (item.StartsWith("I"))
-                    {
-                        item = item.Remove(0, 1);
-                        var start = short.Parse(item);
-                        task.TaskType = start > 0 ? TaskTypes.pwmUp : TaskTypes.pwmDown;
-                        task.start = (ushort)Math.Abs(start);
                         continue;
                     }
                 }

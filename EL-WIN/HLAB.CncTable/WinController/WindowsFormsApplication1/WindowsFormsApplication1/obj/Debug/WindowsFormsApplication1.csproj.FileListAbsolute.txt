@@ -1,0 +1,7 @@
+D:\EL-WIN\HLAB.CncTable\WinController\WindowsFormsApplication1\WindowsFormsApplication1\obj\Debug\ResolveAssemblyReference.cache
+D:\EL-WIN\HLAB.CncTable\WinController\WindowsFormsApplication1\WindowsFormsApplication1\obj\Debug\WindowsFormsApplication1.Properties.Resources.resources
+D:\EL-WIN\HLAB.CncTable\WinController\WindowsFormsApplication1\WindowsFormsApplication1\obj\Debug\WindowsFormsApplication1.csproj.GenerateResource.Cache
+D:\EL-WIN\HLAB.CncTable\WinController\WindowsFormsApplication1\WindowsFormsApplication1\bin\Debug\WindowsFormsApplication1.exe
+D:\EL-WIN\HLAB.CncTable\WinController\WindowsFormsApplication1\WindowsFormsApplication1\bin\Debug\WindowsFormsApplication1.pdb
+D:\EL-WIN\HLAB.CncTable\WinController\WindowsFormsApplication1\WindowsFormsApplication1\obj\Debug\WindowsFormsApplication1.exe
+D:\EL-WIN\HLAB.CncTable\WinController\WindowsFormsApplication1\WindowsFormsApplication1\obj\Debug\WindowsFormsApplication1.pdb

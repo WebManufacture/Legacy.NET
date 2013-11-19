@@ -73,6 +73,7 @@
             this.label1 = new System.Windows.Forms.Label();
             this.lblstartMode = new System.Windows.Forms.Label();
             this.cbEndMode = new System.Windows.Forms.ComboBox();
+            this.paritySel = new System.Windows.Forms.CheckBox();
             this.panel1.SuspendLayout();
             this.pnlService.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.cbChannel)).BeginInit();
@@ -84,6 +85,7 @@
             // 
             // panel1
             // 
+            this.panel1.Controls.Add(this.paritySel);
             this.panel1.Controls.Add(this.pnlService);
             this.panel1.Controls.Add(this.lblState);
             this.panel1.Controls.Add(this.cbPort);
@@ -179,7 +181,7 @@
             this.cbPort.FormattingEnabled = true;
             this.cbPort.Location = new System.Drawing.Point(12, 29);
             this.cbPort.Name = "cbPort";
-            this.cbPort.Size = new System.Drawing.Size(121, 21);
+            this.cbPort.Size = new System.Drawing.Size(126, 21);
             this.cbPort.TabIndex = 0;
             this.cbPort.SelectedIndexChanged += new System.EventHandler(this.cbPort_SelectedIndexChanged);
             // 
@@ -578,6 +580,16 @@
             this.cbEndMode.Size = new System.Drawing.Size(121, 21);
             this.cbEndMode.TabIndex = 12;
             // 
+            // paritySel
+            // 
+            this.paritySel.AutoSize = true;
+            this.paritySel.Location = new System.Drawing.Point(81, 9);
+            this.paritySel.Name = "paritySel";
+            this.paritySel.Size = new System.Drawing.Size(52, 17);
+            this.paritySel.TabIndex = 3;
+            this.paritySel.Text = "Parity";
+            this.paritySel.UseVisualStyleBackColor = true;
+            // 
             // fmMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -653,6 +665,7 @@
         private System.Windows.Forms.Label lblstartMode;
         private System.Windows.Forms.ComboBox cbEndMode;
         private System.Windows.Forms.Button button22;
+        private System.Windows.Forms.CheckBox paritySel;
     }
 }
 
