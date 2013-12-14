@@ -1,7 +1,0 @@
-D:\EL-WIN\MRS.Hardware\MRS.Hardware.HTTPServer\obj\Debug\ResolveAssemblyReference.cache
-D:\EL-WIN\MRS.Hardware\MRS.Hardware.HTTPServer\bin\MRS.Hardware.HTTPServer.dll
-D:\EL-WIN\MRS.Hardware\MRS.Hardware.HTTPServer\bin\MRS.Hardware.HTTPServer.pdb
-D:\EL-WIN\MRS.Hardware\MRS.Hardware.HTTPServer\bin\MRS.Hardware.Server.dll
-D:\EL-WIN\MRS.Hardware\MRS.Hardware.HTTPServer\bin\MRS.Hardware.Server.pdb
-D:\EL-WIN\MRS.Hardware\MRS.Hardware.HTTPServer\obj\Debug\MRS.Hardware.HTTPServer.dll
-D:\EL-WIN\MRS.Hardware\MRS.Hardware.HTTPServer\obj\Debug\MRS.Hardware.HTTPServer.pdb
