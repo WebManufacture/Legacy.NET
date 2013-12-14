@@ -1,5 +1,0 @@
-<Modules>
-  <Module PersistentId="7BEDEC1D-FBFB-4C0F-B76C-43A5816BAC02" ModuleId="Hlab.CncTable.Server" />
-  <Module PersistentId="6E23EF9C-D77A-46B5-83EE-802933D96C73" ModuleId="Hlab.CncTable.Win.UI" />
-  <Module PersistentId="FE366048-48AA-4F48-83E6-7AA3606648C6" ModuleId="MRS.Hardware.HTTPServer" />
-</Modules>
