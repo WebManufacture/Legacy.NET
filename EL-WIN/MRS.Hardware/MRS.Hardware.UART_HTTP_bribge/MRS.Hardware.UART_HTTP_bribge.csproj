@@ -7,8 +7,8 @@
     <ProjectGuid>{D4A8723C-BE9B-47B2-9019-4060CA324B74}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>MRS.Hardware.UART_TCP_bribge</RootNamespace>
-    <AssemblyName>MRS.Hardware.UART_TCP_bribge</AssemblyName>
+    <RootNamespace>MRS.Hardware.HttpToUART</RootNamespace>
+    <AssemblyName>HttpToUART</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
@@ -27,7 +27,7 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
+    <OutputPath>..\Release\HttpToUart\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
