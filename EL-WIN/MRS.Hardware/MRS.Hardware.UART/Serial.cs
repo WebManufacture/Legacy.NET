@@ -127,16 +127,16 @@ namespace MRS.Hardware.UART
             var worker = (BackgroundWorker)sender;
             byte[] receivedBuf = null;
             int readingIndex = 0;
+            State = EDeviceState.Online;
             while (!worker.CancellationPending && device.IsOpen)
-            {
-                State = EDeviceState.Online;
+            {                
                 int bytesRead = device.BytesToRead;
                 if (bytesRead == 0 && readState == UARTReadingState.free)
                 {
                     Thread.Sleep(100);
                     continue;
                 }
-                State = EDeviceState.Busy;
+                //State = EDeviceState.Busy;
                 int b = device.ReadByte();
                 if (b < 0) continue;
                 if (readState == UARTReadingState.free && b == 01)
