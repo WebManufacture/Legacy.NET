@@ -1,0 +1,38 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hlab.CncTable.Server", "Server\Hlab.CncTable.Server.csproj", "{7BEDEC1D-FBFB-4C0F-B76C-43A5816BAC02}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hlab.CncTable.Win.UI", "WinController\Hlab.CncTable.Win.UI\Hlab.CncTable.Win.UI.csproj", "{6E23EF9C-D77A-46B5-83EE-802933D96C73}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MRS.Hardware.TCP_HTTP_Services", "..\MRS.Hardware\MRS.Hardware.TCP_HTTP_Services\MRS.Hardware.TCP_HTTP_Services.csproj", "{F43D7A7C-B7B7-4A31-865D-49D6A49F119C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MRS.Hardware.UART", "..\MRS.Hardware\MRS.Hardware.UART\MRS.Hardware.UART.csproj", "{317EA2C1-614D-49AB-A36A-32B2CF788064}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{7BEDEC1D-FBFB-4C0F-B76C-43A5816BAC02}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7BEDEC1D-FBFB-4C0F-B76C-43A5816BAC02}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7BEDEC1D-FBFB-4C0F-B76C-43A5816BAC02}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7BEDEC1D-FBFB-4C0F-B76C-43A5816BAC02}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6E23EF9C-D77A-46B5-83EE-802933D96C73}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6E23EF9C-D77A-46B5-83EE-802933D96C73}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6E23EF9C-D77A-46B5-83EE-802933D96C73}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6E23EF9C-D77A-46B5-83EE-802933D96C73}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F43D7A7C-B7B7-4A31-865D-49D6A49F119C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F43D7A7C-B7B7-4A31-865D-49D6A49F119C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F43D7A7C-B7B7-4A31-865D-49D6A49F119C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F43D7A7C-B7B7-4A31-865D-49D6A49F119C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{317EA2C1-614D-49AB-A36A-32B2CF788064}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{317EA2C1-614D-49AB-A36A-32B2CF788064}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{317EA2C1-614D-49AB-A36A-32B2CF788064}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{317EA2C1-614D-49AB-A36A-32B2CF788064}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
