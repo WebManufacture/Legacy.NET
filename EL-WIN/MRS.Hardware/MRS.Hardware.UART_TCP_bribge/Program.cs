@@ -32,21 +32,21 @@ namespace MRS.Hardware.UART_TCP_bribge
             serial.OnStateChange += serial_OnStateChange;
             serial.Connect();
 
-            bridge = new HttpToUartBridge(6200);
+           // bridge = new HttpToUartBridge(6200);
 
             TcpListener listener = new TcpListener(IPAddress.Parse("188.127.233.35"), tcpPort);
             listener.Start();
             Console.WriteLine("TCP: " + tcpPort);
             while (Thread.CurrentThread.ThreadState == ThreadState.Running)
             {
-                server_OnServerState("Listening " + tcpPort);
+                Console.WriteLine("Listening " + tcpPort);
                 while (!listener.Pending())
                 {
                     Thread.Sleep(300);
                 }
                 server.AcceptTcpClient(listener.AcceptSocket());
             }
-            server_OnServerState("Stopped");
+            Console.WriteLine("Stopped");
             listener.Stop();
             server.Close();
             serial.Close();
@@ -62,14 +62,14 @@ namespace MRS.Hardware.UART_TCP_bribge
             Console.WriteLine("TCP_Client" + clientId + "  ->  " + message + " " + server.GetClientIP(clientId));
         }
 
-        static void server_OnServerState(string state)
+        static void server_OnServerState(TcpServerState state)
         {
             Console.WriteLine("TCP -> " + state);
         }
 
         static void server_OnData(int clientId, byte[] data)
         {
-            serial.Send(data);
+            serial.SendSized(data);
         }
 
         static void serial_OnReceive(byte[] data)
