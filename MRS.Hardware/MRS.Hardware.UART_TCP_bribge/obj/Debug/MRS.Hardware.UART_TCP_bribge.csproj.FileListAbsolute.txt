@@ -19,3 +19,15 @@ D:\EL-WIN\MRS.Hardware\MRS.Hardware.UART_TCP_bribge\obj\Debug\MRS.Hardware.UART_
 C:\Dev\EL-WIN\MRS.Hardware.UART_TCP_bribge\bin\Debug\MRS.Hardware.UART_TCP_bribge.exe.config
 C:\Dev\EL-WIN\MRS.Hardware.UART_TCP_bribge\obj\Debug\MRS.Hardware.UART_TCP_bribge.exe
 C:\Dev\EL-WIN\MRS.Hardware.UART_TCP_bribge\obj\Debug\MRS.Hardware.UART_TCP_bribge.pdb
+D:\DEV\EL-WIN\MRS.Hardware\MRS.Hardware.UART_TCP_bribge\bin\Debug\MRS.Hardware.UART_TCP_bribge.exe.config
+D:\DEV\EL-WIN\MRS.Hardware\MRS.Hardware.UART_TCP_bribge\obj\Debug\MRS.Hardware.UART_TCP_bribge.exe
+D:\DEV\EL-WIN\MRS.Hardware\MRS.Hardware.UART_TCP_bribge\obj\Debug\MRS.Hardware.UART_TCP_bribge.pdb
+D:\DEV\EL-WIN\MRS.Hardware\MRS.Hardware.UART_TCP_bribge\obj\Debug\MRS.Hardware.UART_TCP_bribge.csprojResolveAssemblyReference.cache
+D:\DEV\EL-WIN\MRS.Hardware\MRS.Hardware.UART_TCP_bribge\bin\Debug\MRS.Hardware.UART_TCP_bribge.exe
+D:\DEV\EL-WIN\MRS.Hardware\MRS.Hardware.UART_TCP_bribge\bin\Debug\MRS.Hardware.UART_TCP_bribge.pdb
+D:\DEV\EL-WIN\MRS.Hardware\MRS.Hardware.UART_TCP_bribge\bin\Debug\MRS.Hardware.TCP_HTTP_Services.exe
+D:\DEV\EL-WIN\MRS.Hardware\MRS.Hardware.UART_TCP_bribge\bin\Debug\MRS.Hardware.UART.dll
+D:\DEV\EL-WIN\MRS.Hardware\MRS.Hardware.UART_TCP_bribge\bin\Debug\FTD2XX_NET.dll
+D:\DEV\EL-WIN\MRS.Hardware\MRS.Hardware.UART_TCP_bribge\bin\Debug\MRS.Hardware.TCP_HTTP_Services.pdb
+D:\DEV\EL-WIN\MRS.Hardware\MRS.Hardware.UART_TCP_bribge\bin\Debug\MRS.Hardware.UART.pdb
+D:\DEV\EL-WIN\MRS.Hardware\MRS.Hardware.UART_TCP_bribge\bin\Debug\FTD2XX_NET.xml

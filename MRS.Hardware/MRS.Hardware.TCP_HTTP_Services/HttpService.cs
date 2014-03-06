@@ -17,8 +17,8 @@ namespace MRS.Hardware.CommunicationsServices
         Offline
     }
 
-    public delegate void OnHttpDataHandler(string data);
-    
+    public delegate void OnHttpDataHandler(HttpListenerContext context, string data);
+    public delegate void OnHttpConnectHandler(HttpListenerContext context);
     public delegate void OnHttpServerStateHandler(HttpServerState state);
 
     public class HardwareHttpServer
@@ -26,6 +26,7 @@ namespace MRS.Hardware.CommunicationsServices
         protected Queue<string> Messages;
 
         public event OnHttpDataHandler OnData;
+        public event OnHttpConnectHandler OnConnect;
         public event OnHttpServerStateHandler OnServerState;
 
         private HttpListener listener;
@@ -72,6 +73,7 @@ namespace MRS.Hardware.CommunicationsServices
            Messages = new Queue<string>();
            listener = new HttpListener();
            listener.Prefixes.Add("http://+:" + this.port + "/");
+           listener.AuthenticationSchemes = AuthenticationSchemes.Anonymous;
            worker = new BackgroundWorker();
            worker.DoWork += new DoWorkEventHandler(worker_DoWork);
            worker.WorkerSupportsCancellation = true;
@@ -87,6 +89,16 @@ namespace MRS.Hardware.CommunicationsServices
             worker.RunWorkerAsync(port);
         }
 
+        public void Stop()
+        {
+            if (listener.IsListening)
+            {
+                listener.Stop();
+                State = HttpServerState.Offline;
+            }
+            worker.CancelAsync();
+        }
+
         public void AcceptClient(HttpListenerContext context)
         {
             context.Response.AddHeader("Access-Control-Allow-Methods", "POST,GET,OPTIONS");
@@ -95,18 +107,19 @@ namespace MRS.Hardware.CommunicationsServices
             context.Response.ContentType = "text/json";
             context.Response.StatusCode = 200;
             context.Response.ContentEncoding = Encoding.UTF8;
-            context.Response.SendChunked = true;
+            context.Response.SendChunked = false;
             context.Response.KeepAlive = false;
             context.Response.OutputStream.Flush();
-            if (context.Request.HttpMethod == "GET")
-            {
+            if (OnConnect != null){
+                OnConnect(context);
+            }
+            if (context.Request.HttpMethod == "GET"){
                 var client = new Thread(GetThreadFunction);
                 client.Start(context);
                 State = HttpServerState.Connected;
                 return;
             }
-            if (context.Request.HttpMethod == "POST")
-            {
+            if (context.Request.HttpMethod == "POST"){
                 ReceiveData(context);
                 return;
             }
@@ -128,7 +141,7 @@ namespace MRS.Hardware.CommunicationsServices
             {
                 try
                 {
-                    var context = listener.GetContext();
+                    var context = listener.GetContext();                    
                     AcceptClient(context);
                 }
                 catch (Exception)
@@ -141,6 +154,7 @@ namespace MRS.Hardware.CommunicationsServices
         private void GetThreadFunction(object obj)
         {
             HttpListenerContext context = (HttpListenerContext)obj;
+            var hb = 0;
             while (Thread.CurrentThread.ThreadState == ThreadState.Running)
             {
                 while (Messages.Count > 0)
@@ -159,6 +173,21 @@ namespace MRS.Hardware.CommunicationsServices
                     }
                 }
                 Thread.Sleep(100);
+                hb++;
+                if (hb >= 30)
+                {
+                    hb = 0;
+                    try
+                    {
+                        context.Response.OutputStream.WriteByte(00);
+                        context.Response.OutputStream.Flush();
+                    }
+                    catch (Exception)
+                    {
+                        State = HttpServerState.Free;
+                        return;
+                    }
+                }
             }
             State = HttpServerState.Free;
             context.Response.Close();
@@ -172,7 +201,7 @@ namespace MRS.Hardware.CommunicationsServices
             context.Response.Close();
             if (OnData != null)
             {
-                OnData(data);
+                OnData(context, data);
             }
         }
 

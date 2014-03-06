@@ -33,6 +33,24 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\..\Lib\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="SuperSocket.Common">
+      <HintPath>..\..\Lib\SWS\SuperSocket.Common.dll</HintPath>
+    </Reference>
+    <Reference Include="SuperSocket.Facility">
+      <HintPath>..\..\Lib\SWS\SuperSocket.Facility.dll</HintPath>
+    </Reference>
+    <Reference Include="SuperSocket.SocketBase">
+      <HintPath>..\..\Lib\SWS\SuperSocket.SocketBase.dll</HintPath>
+    </Reference>
+    <Reference Include="SuperSocket.SocketEngine">
+      <HintPath>..\..\Lib\SWS\SuperSocket.SocketEngine.dll</HintPath>
+    </Reference>
+    <Reference Include="SuperWebSocket">
+      <HintPath>..\..\Lib\SWS\SuperWebSocket.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
@@ -52,10 +70,6 @@
     <WCFMetadata Include="Service References\" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\MRS.Hardware.TCP_HTTP_Services\MRS.Hardware.TCP_HTTP_Services.csproj">
-      <Project>{f43d7a7c-b7b7-4a31-865d-49d6a49f119c}</Project>
-      <Name>MRS.Hardware.TCP_HTTP_Services</Name>
-    </ProjectReference>
     <ProjectReference Include="..\MRS.Hardware.UART\MRS.Hardware.UART.csproj">
       <Project>{7bedec1d-fbfb-4c0f-b76c-43a5816bac02}</Project>
       <Name>MRS.Hardware.UART</Name>

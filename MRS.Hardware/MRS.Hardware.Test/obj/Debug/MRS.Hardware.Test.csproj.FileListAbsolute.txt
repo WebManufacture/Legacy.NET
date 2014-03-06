@@ -25,3 +25,7 @@ D:\EL-WIN\MRS.Hardware\MRS.Hardware.Test\bin\Debug\MRS.Hardware.dll
 D:\EL-WIN\MRS.Hardware\MRS.Hardware.Test\bin\Debug\HIDLibrary.pdb
 D:\EL-WIN\MRS.Hardware\MRS.Hardware.Test\bin\Debug\MRS.Hardware.pdb
 D:\EL-WIN\MRS.Hardware\MRS.Hardware.Test\obj\Debug\MRS.Hardware.Test.csprojResolveAssemblyReference.cache
+D:\DEV\EL-WIN\MRS.Hardware\MRS.Hardware.Test\bin\Debug\MRS.Hardware.Test.exe
+D:\DEV\EL-WIN\MRS.Hardware\MRS.Hardware.Test\bin\Debug\MRS.Hardware.Test.pdb
+D:\DEV\EL-WIN\MRS.Hardware\MRS.Hardware.Test\obj\Debug\MRS.Hardware.Test.exe
+D:\DEV\EL-WIN\MRS.Hardware\MRS.Hardware.Test\obj\Debug\MRS.Hardware.Test.pdb
