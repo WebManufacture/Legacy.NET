@@ -12,8 +12,8 @@ namespace MRS.Hardware.UART_TCP_bribge
 {
     class Program
     {
-        static HardwareTcpServer server;
         static HttpToUartBridge bridge;
+        
         static UART.Serial serial;
 
         static void Main(string[] args)
@@ -22,12 +22,8 @@ namespace MRS.Hardware.UART_TCP_bribge
             var port = settings["COM_PORT"];
             var speed = Convert.ToInt32(settings["COM_SPEED"]);
             var httpPort = Convert.ToInt32(settings["HTTP_PORT"]);
-            serial = new UART.Serial(port, speed);
             Console.WriteLine("UART: " + port + " - " + speed);
-            server = new HardwareTcpServer(tcpPort);
-            server.OnServerState += server_OnServerState;
-            server.OnClientState += server_OnClientState;
-            server.OnData += server_OnData;
+
             serial.OnReceive += serial_OnReceive;
             serial.OnStateChange += serial_OnStateChange;
             serial.Connect();

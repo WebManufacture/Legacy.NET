@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MRS.Hardware.UART", "MRS.Hardware.UART\MRS.Hardware.UART.csproj", "{7BEDEC1D-FBFB-4C0F-B76C-43A5816BAC02}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MRS.Hardware.UART", "MRS.Hardware.UART\MRS.Hardware.UART.csproj", "{317EA2C1-614D-49AB-A36A-32B2CF788064}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MRS.Hardware.Test", "MRS.Hardware.Test\MRS.Hardware.Test.csproj", "{CFC8A5E8-2B3E-4167-BC99-8D26D201A40F}"
 EndProject
@@ -11,16 +11,18 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MRS.Hardware.TCP_HTTP_Servi
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MRS.Hardware.UART_TCP_bribge", "MRS.Hardware.UART_TCP_bribge\MRS.Hardware.UART_TCP_bribge.csproj", "{D0A15A95-9936-4B32-AD87-2170E54576DC}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MRS.Hardware.UART_HTTP_bribge", "MRS.Hardware.UART_HTTP_bribge\MRS.Hardware.UART_HTTP_bribge.csproj", "{D4A8723C-BE9B-47B2-9019-4060CA324B74}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{7BEDEC1D-FBFB-4C0F-B76C-43A5816BAC02}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{7BEDEC1D-FBFB-4C0F-B76C-43A5816BAC02}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{7BEDEC1D-FBFB-4C0F-B76C-43A5816BAC02}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{7BEDEC1D-FBFB-4C0F-B76C-43A5816BAC02}.Release|Any CPU.Build.0 = Release|Any CPU
+		{317EA2C1-614D-49AB-A36A-32B2CF788064}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{317EA2C1-614D-49AB-A36A-32B2CF788064}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{317EA2C1-614D-49AB-A36A-32B2CF788064}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{317EA2C1-614D-49AB-A36A-32B2CF788064}.Release|Any CPU.Build.0 = Release|Any CPU
 		{CFC8A5E8-2B3E-4167-BC99-8D26D201A40F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{CFC8A5E8-2B3E-4167-BC99-8D26D201A40F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CFC8A5E8-2B3E-4167-BC99-8D26D201A40F}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -37,6 +39,10 @@ Global
 		{D0A15A95-9936-4B32-AD87-2170E54576DC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D0A15A95-9936-4B32-AD87-2170E54576DC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D0A15A95-9936-4B32-AD87-2170E54576DC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D4A8723C-BE9B-47B2-9019-4060CA324B74}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D4A8723C-BE9B-47B2-9019-4060CA324B74}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D4A8723C-BE9B-47B2-9019-4060CA324B74}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D4A8723C-BE9B-47B2-9019-4060CA324B74}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
