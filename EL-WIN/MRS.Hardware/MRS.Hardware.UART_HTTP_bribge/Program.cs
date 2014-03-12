@@ -17,6 +17,7 @@ namespace MRS.Hardware.UART_HTTP_bribge
         static SuperWebSocket.WebSocketServer socketServer;
         static UART.Serial serial;
         static string ComPortCFG;
+        static string SocketMsg = "{\"type\":\"{0}\", \"data\":{1} }";
         static void Main(string[] args)
         {
             var settings = ConfigurationManager.AppSettings;
@@ -25,6 +26,7 @@ namespace MRS.Hardware.UART_HTTP_bribge
             var comPortSpeed = Convert.ToInt32(settings["COM_SPEED"]);
 
             ComPortCFG = "{\"port\": \"" + comPort + "\", \"speed\":\"" + comPortSpeed + "\", \"state\": \"{0}\"}";
+            
             //server = new HardwareHttpServer(httpPort);
             Console.WriteLine("HTTP: " + httpPort);
             //server.OnConnect += server_OnConnect;
@@ -51,10 +53,15 @@ namespace MRS.Hardware.UART_HTTP_bribge
             socketServer.Stop();
         }
 
+        protected static string getMessage(string type, string data){
+            return SocketMsg.Replace("{0}", type).Replace("{1}", data);
+        }
+
         private static void socketServer_NewSessionConnected(WebSocketSession session)
         {
             Console.WriteLine("Sock client connected " + session.SessionID);
-            session.Send(ComPortCFG.Replace("{0}", serial.State + ""));
+
+            session.Send(getMessage("config", ComPortCFG.Replace("{0}", serial.State + "")));
         }
 
         static void socketServer_SessionClosed(WebSocketSession session, SuperSocket.SocketBase.CloseReason value)
@@ -62,9 +69,23 @@ namespace MRS.Hardware.UART_HTTP_bribge
             Console.WriteLine(session.SessionID + " closed " + value);
         }
 
-        static void socketServer_NewMessageReceived(WebSocketSession session, string value)
+        static void socketServer_NewMessageReceived(WebSocketSession thisSession, string value)
         {
-            Console.WriteLine(session.SessionID + " --> " + value);
+            Console.WriteLine(thisSession.SessionID + " --> " + value);
+            if (serial.State >= UART.EDeviceState.PortOpen && serial.State < UART.EDeviceState.Offline)
+            {
+                serial.SendSized(JsonConvert.DeserializeObject<byte[]>(value));
+            }
+            var sessions = socketServer.GetAllSessions();
+            var segment = getMessage("to-uart-data", value);
+            foreach (var session in sessions)
+            {
+                if (session != thisSession)
+                {
+                    session.Send(segment);
+                }
+            }
+            
         }
           
         private static void server_socketClosed(object sender, EventArgs e)
@@ -83,10 +104,7 @@ namespace MRS.Hardware.UART_HTTP_bribge
         
         static void server_OnData(HttpListenerContext context, string data)
         {
-            if (serial.State >= UART.EDeviceState.PortOpen && serial.State < UART.EDeviceState.Offline)
-            {
-                serial.SendSized(JsonConvert.DeserializeObject<byte[]>(data));
-            }
+            
         }        
 
         //--------------------------------------------------------------------------------------------------
@@ -102,9 +120,9 @@ namespace MRS.Hardware.UART_HTTP_bribge
             if (socketServer != null && socketServer.State == SuperSocket.SocketBase.ServerState.Running)
             {
                 var sessions = socketServer.GetAllSessions();
-                var segment = JsonConvert.SerializeObject(data);
+                var segment = getMessage("from-uart-data", JsonConvert.SerializeObject(data));
                 foreach (var session in sessions)
-                {                    
+                {
                     session.Send(segment);
                 }
             }
