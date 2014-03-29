@@ -71,7 +71,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\MRS.Hardware.UART\MRS.Hardware.UART.csproj">
-      <Project>{7bedec1d-fbfb-4c0f-b76c-43a5816bac02}</Project>
+      <Project>{317ea2c1-614d-49ab-a36a-32b2cf788064}</Project>
       <Name>MRS.Hardware.UART</Name>
     </ProjectReference>
   </ItemGroup>
