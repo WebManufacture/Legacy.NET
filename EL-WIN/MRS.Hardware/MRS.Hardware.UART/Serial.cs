@@ -40,6 +40,7 @@ namespace MRS.Hardware.UART
         }
 
         public event OnReceiveHandler OnReceive;
+        public event OnReceiveHandler OnError;
 
         public event OnReceiveByteHandler OnReceiveByte;
 
@@ -129,52 +130,64 @@ namespace MRS.Hardware.UART
             int readingIndex = 0;
             State = EDeviceState.Online;
             while (!worker.CancellationPending && device.IsOpen)
-            {                
-                int bytesRead = device.BytesToRead;
-                if (bytesRead == 0 && readState == UARTReadingState.free)
+            {
+                try
                 {
-                    Thread.Sleep(100);
-                    continue;
-                }
-                //State = EDeviceState.Busy;
-                int b = device.ReadByte();
-                if (b < 0) continue;
-                if (readState == UARTReadingState.free && b == 01)
-                {
-                    readState = UARTReadingState.reading;
-                    int size = device.ReadByte();
-                    if (size <= 0)
+                    int bytesRead = device.BytesToRead;
+                    if (bytesRead == 0 && readState == UARTReadingState.free)
                     {
-                        readState = UARTReadingState.free;
+                        Thread.Sleep(100);
                         continue;
                     }
-                    receivedBuf = new byte[size];
-                    readingIndex = 0;
-                    readState = UARTReadingState.readingSized;
-                    continue;
-                }
-                if (readState == UARTReadingState.readingSized)
-                {
-                    if (readingIndex >= receivedBuf.Length)
+                    //State = EDeviceState.Busy;
+                    int b = device.ReadByte();
+                    if (b < 0) continue;
+                    if (readState <= UARTReadingState.free && (b == 01 || b == 02))
                     {
-                        if (b == 4)
+                        readState = UARTReadingState.reading;
+                        int size = device.ReadByte();
+                        if (size <= 0)
                         {
                             readState = UARTReadingState.free;
-                            if (OnReceive != null)
+                            continue;
+                        }
+                        receivedBuf = new byte[size];
+                        readingIndex = 0;
+                        readState = UARTReadingState.readingSized;
+                        continue;
+                    }
+                    if (readState == UARTReadingState.readingSized)
+                    {
+                        if (readingIndex >= receivedBuf.Length)
+                        {
+                            readState = UARTReadingState.free;
+                            if (b == 4)
                             {
-                                OnReceive(receivedBuf);
+                                if (OnReceive != null)
+                                {
+                                    OnReceive(receivedBuf);
+                                }
+                            }
+                            else
+                            {
+                                State = EDeviceState.Error;
+                                if (OnError != null)
+                                {
+                                    State = EDeviceState.Online;
+                                    OnError(receivedBuf);
+                                }
                             }
                         }
                         else
                         {
-                            State = EDeviceState.Error;
+                            receivedBuf[readingIndex] = (byte)b;
+                            readingIndex++;
                         }
                     }
-                    else
-                    {
-                        receivedBuf[readingIndex] = (byte)b;
-                        readingIndex++;
-                    }
+                }
+                catch (Exception err)
+                {
+
                 }
             }
             State = EDeviceState.Offline;

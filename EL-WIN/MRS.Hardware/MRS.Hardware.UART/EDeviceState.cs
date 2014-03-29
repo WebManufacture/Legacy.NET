@@ -7,12 +7,12 @@
     public enum EDeviceState
     {
         Unknown,
-        PortOpen,
-        Offline,
+        PortOpen,        
         Error,
         Busy,
         Online,
-        Working
+        Working,
+        Offline
     }
 
     public enum UARTWritingState

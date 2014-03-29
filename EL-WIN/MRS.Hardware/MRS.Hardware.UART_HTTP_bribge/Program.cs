@@ -44,6 +44,7 @@ namespace MRS.Hardware.UART_HTTP_bribge
             serial = new UART.Serial(comPort, comPortSpeed);
             Console.WriteLine("COM: " + comPort + " " + comPortSpeed);
             serial.OnReceive += serial_OnReceive;
+            serial.OnError += serial_OnError;
             serial.OnStateChange += serial_OnStateChange;
             serial.Connect();
 
@@ -52,6 +53,7 @@ namespace MRS.Hardware.UART_HTTP_bribge
             serial.Close();
             socketServer.Stop();
         }
+
 
         protected static string getMessage(string type, string data){
             return SocketMsg.Replace("{0}", type).Replace("{1}", data);
@@ -110,6 +112,20 @@ namespace MRS.Hardware.UART_HTTP_bribge
         //--------------------------------------------------------------------------------------------------
 
 
+        private static void serial_OnError(byte[] data)
+        {
+            if (socketServer != null && socketServer.State == SuperSocket.SocketBase.ServerState.Running)
+            {
+                Console.WriteLine("UART ERROR " + data.Length);
+                var sessions = socketServer.GetAllSessions();
+                var segment = getMessage("uart-error", JsonConvert.SerializeObject(data));
+                foreach (var session in sessions)
+                {
+                    session.Send(segment);
+                }
+            }
+        }
+
         static void serial_OnStateChange(UART.EDeviceState state)
         {
             Console.WriteLine("UART -> " + state);
@@ -119,8 +135,9 @@ namespace MRS.Hardware.UART_HTTP_bribge
         {
             if (socketServer != null && socketServer.State == SuperSocket.SocketBase.ServerState.Running)
             {
+                Console.WriteLine("UART << " + data.Length);
                 var sessions = socketServer.GetAllSessions();
-                var segment = getMessage("from-uart-data", JsonConvert.SerializeObject(data));
+                var segment = getMessage("from-uart-data", JsonConvert.SerializeObject(new List<byte>(data)));
                 foreach (var session in sessions)
                 {
                     session.Send(segment);
