@@ -15,6 +15,7 @@ namespace MRS.Hardware.UART_HTTP_bribge
     class Program
     {
         static SuperWebSocket.WebSocketServer socketServer;
+        static CommunicationsServices.HardwareHttpServer httpServer;
         static UART.Serial serial;
         static string ComPortCFG;
         static string SocketMsg = "{\"type\":\"{0}\", \"data\":{1} }";
@@ -22,6 +23,7 @@ namespace MRS.Hardware.UART_HTTP_bribge
         {
             var settings = ConfigurationManager.AppSettings;
             var httpPort = Convert.ToInt32(settings["HTTP_PORT"]);
+            var wsPort = Convert.ToInt32(settings["WS_PORT"]);
             var comPort = settings["COM_PORT"];
             var comPortSpeed = Convert.ToInt32(settings["COM_SPEED"]);
 
@@ -29,17 +31,22 @@ namespace MRS.Hardware.UART_HTTP_bribge
             
             //server = new HardwareHttpServer(httpPort);
             Console.WriteLine("HTTP: " + httpPort);
+            Console.WriteLine("WEB-SOCKET: " + wsPort);
             //server.OnConnect += server_OnConnect;
             //server.OnData += server_OnData;
            // server.OnServerState += server_OnState;
             //server.Start();
 
             socketServer = new WebSocketServer();
-            socketServer.Setup(httpPort);
+            socketServer.Setup(wsPort);
             socketServer.NewMessageReceived += socketServer_NewMessageReceived;
             socketServer.SessionClosed += socketServer_SessionClosed;
             socketServer.NewSessionConnected += socketServer_NewSessionConnected;
             socketServer.Start();
+
+            httpServer = new CommunicationsServices.HardwareHttpServer(httpPort);
+            httpServer.OnData += httpServer_OnData;
+            httpServer.OnServerState += httpServer_OnServerState;
 
             serial = new UART.Serial(comPort, comPortSpeed);
             Console.WriteLine("COM: " + comPort + " " + comPortSpeed);
@@ -53,6 +60,7 @@ namespace MRS.Hardware.UART_HTTP_bribge
             serial.Close();
             socketServer.Stop();
         }
+
 
 
         protected static string getMessage(string type, string data){
@@ -73,7 +81,7 @@ namespace MRS.Hardware.UART_HTTP_bribge
 
         static void socketServer_NewMessageReceived(WebSocketSession thisSession, string value)
         {
-            Console.WriteLine(thisSession.SessionID + " --> " + value);
+            Console.WriteLine("WS --> " + value);
             if (serial.State >= UART.EDeviceState.PortOpen && serial.State < UART.EDeviceState.Offline)
             {
                 serial.SendSized(JsonConvert.DeserializeObject<byte[]>(value));
@@ -89,6 +97,9 @@ namespace MRS.Hardware.UART_HTTP_bribge
             }
             
         }
+
+
+
           
         private static void server_socketClosed(object sender, EventArgs e)
         {
@@ -96,7 +107,27 @@ namespace MRS.Hardware.UART_HTTP_bribge
         }
 
         //--------------------------------------------------------------------------------------------------
-        
+
+        static void httpServer_OnData(HttpListenerContext context, string data)
+        {
+            Console.WriteLine("HTTP --> " + data);
+            if (serial.State >= UART.EDeviceState.PortOpen && serial.State < UART.EDeviceState.Offline)
+            {
+                serial.SendSized(JsonConvert.DeserializeObject<byte[]>(data));
+            }
+            var sessions = socketServer.GetAllSessions();
+            var segment = getMessage("to-uart-data", data);
+            foreach (var session in sessions)
+            {
+                session.Send(segment);
+            }
+        }
+
+        static void httpServer_OnServerState(CommunicationsServices.HttpServerState state)
+        {
+            Console.WriteLine("HTTP => " + state);
+        }
+
         static void server_OnConnect(HttpListenerContext context)
         {
             Thread.Sleep(100);

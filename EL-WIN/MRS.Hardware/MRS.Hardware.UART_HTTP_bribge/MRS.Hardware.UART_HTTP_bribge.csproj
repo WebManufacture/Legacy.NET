@@ -60,16 +60,23 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="HttpService.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config" />
+    <None Include="App.config">
+      <SubType>Designer</SubType>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <WCFMetadata Include="Service References\" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\MRS.Hardware.TCP_HTTP_Services\MRS.Hardware.TCP_HTTP_Services.csproj">
+      <Project>{f43d7a7c-b7b7-4a31-865d-49d6a49f119c}</Project>
+      <Name>MRS.Hardware.TCP_HTTP_Services</Name>
+    </ProjectReference>
     <ProjectReference Include="..\MRS.Hardware.UART\MRS.Hardware.UART.csproj">
       <Project>{317ea2c1-614d-49ab-a36a-32b2cf788064}</Project>
       <Name>MRS.Hardware.UART</Name>
