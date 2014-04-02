@@ -144,7 +144,7 @@ namespace MRS.Hardware.CommunicationsServices
                     var context = listener.GetContext();                    
                     AcceptClient(context);
                 }
-                catch (Exception)
+                catch (Exception err)
                 {
                     Thread.Sleep(100);
                 }
