@@ -7,7 +7,6 @@ using System.Text;
 using System.Threading;
 //using MRS.Hardware.CommunicationsServices;
 using System.Net;
-using Newtonsoft.Json;
 using SuperWebSocket;
 
 namespace MRS.Hardware.UART_HTTP_bribge
@@ -90,7 +89,7 @@ namespace MRS.Hardware.UART_HTTP_bribge
             Console.WriteLine("WS --> " + value);
             if (serial.State >= UART.EDeviceState.PortOpen && serial.State < UART.EDeviceState.Offline)
             {
-                serial.SendSized(JsonConvert.DeserializeObject<byte[]>(value));
+                serial.SendSized(ParseArray(value));
             }
             var sessions = socketServer.GetAllSessions();
             var segment = getMessage("to-uart-data", value);
@@ -105,6 +104,28 @@ namespace MRS.Hardware.UART_HTTP_bribge
         }
 
 
+        static byte[] ParseArray(string item)
+        {
+            var serialized = item.Replace("[", "").Replace("]", "");
+            var bytesString = serialized.Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries);
+            var bytes = new byte[bytesString.Length];
+            for (var i = 0; i < bytesString.Length; i++)
+            {
+                bytes[i] = Convert.ToByte(bytesString[i]);
+            }
+            return bytes;
+        }
+
+        static string JsonArray(byte[] data)
+        {
+            var bytes = new string[data.Length];
+            for (var i = 0; i < data.Length; i++)
+            {
+                bytes[i] = data[i] + "";
+            }
+            var str = String.Join(",", bytes);
+            return "[" + str + "]";
+        }
 
           
         private static void server_socketClosed(object sender, EventArgs e)
@@ -159,7 +180,7 @@ namespace MRS.Hardware.UART_HTTP_bribge
             {
                 Console.WriteLine("UART ERROR " + data.Length);
                 var sessions = socketServer.GetAllSessions();
-                var segment = getMessage("uart-error", JsonConvert.SerializeObject(data));
+                var segment = getMessage("uart-error", JsonArray(data));
                 foreach (var session in sessions)
                 {
                     session.Send(segment);
@@ -178,7 +199,7 @@ namespace MRS.Hardware.UART_HTTP_bribge
             if (socketServer != null && socketServer.State == SuperSocket.SocketBase.ServerState.Running)
             {
                 var sessions = socketServer.GetAllSessions();
-                var segment = getMessage("from-uart-data", JsonConvert.SerializeObject(new List<byte>(data)));
+                var segment = getMessage("from-uart-data", JsonArray(data));
                 foreach (var session in sessions)
                 {
                     session.Send(segment);
