@@ -34,3 +34,15 @@ D:\DEV\EL-WIN\MRS.Hardware\MRS.Hardware.UART_TCP_bribge\bin\Release\FTD2XX_NET.x
 D:\DEV\EL-WIN\MRS.Hardware\MRS.Hardware.UART_TCP_bribge\obj\Release\MRS.Hardware.UART_TCP_bribge.csprojResolveAssemblyReference.cache
 D:\DEV\EL-WIN\MRS.Hardware\MRS.Hardware.UART_TCP_bribge\obj\Release\MRS.Hardware.UART_TCP_bribge.exe
 D:\DEV\EL-WIN\MRS.Hardware\MRS.Hardware.UART_TCP_bribge\obj\Release\MRS.Hardware.UART_TCP_bribge.pdb
+C:\EL-WIN\MRS.Hardware\MRS.Hardware.UART_TCP_bribge\bin\Release\MRS.Hardware.UART_TCP_bribge.exe.config
+C:\EL-WIN\MRS.Hardware\MRS.Hardware.UART_TCP_bribge\bin\Release\MRS.Hardware.UART_TCP_bribge.exe
+C:\EL-WIN\MRS.Hardware\MRS.Hardware.UART_TCP_bribge\bin\Release\MRS.Hardware.UART_TCP_bribge.pdb
+C:\EL-WIN\MRS.Hardware\MRS.Hardware.UART_TCP_bribge\bin\Release\MRS.Hardware.TCP_HTTP_Services.exe
+C:\EL-WIN\MRS.Hardware\MRS.Hardware.UART_TCP_bribge\bin\Release\MRS.Hardware.UART.dll
+C:\EL-WIN\MRS.Hardware\MRS.Hardware.UART_TCP_bribge\bin\Release\FTD2XX_NET.dll
+C:\EL-WIN\MRS.Hardware\MRS.Hardware.UART_TCP_bribge\bin\Release\MRS.Hardware.TCP_HTTP_Services.pdb
+C:\EL-WIN\MRS.Hardware\MRS.Hardware.UART_TCP_bribge\bin\Release\MRS.Hardware.UART.pdb
+C:\EL-WIN\MRS.Hardware\MRS.Hardware.UART_TCP_bribge\bin\Release\FTD2XX_NET.xml
+C:\EL-WIN\MRS.Hardware\MRS.Hardware.UART_TCP_bribge\obj\Release\MRS.Hardware.UART_TCP_bribge.csprojResolveAssemblyReference.cache
+C:\EL-WIN\MRS.Hardware\MRS.Hardware.UART_TCP_bribge\obj\Release\MRS.Hardware.UART_TCP_bribge.exe
+C:\EL-WIN\MRS.Hardware\MRS.Hardware.UART_TCP_bribge\obj\Release\MRS.Hardware.UART_TCP_bribge.pdb
