@@ -146,13 +146,14 @@ namespace MRS.Hardware.UART_HTTP_bribge
         {
             var txt = Encoding.UTF8.GetString(data);
             var items = txt.Split(';');
-            if (items.Length > 3)
+            if (items.Length > 20)
             {
                 Console.WriteLine("TCP " + clientId + " --> " + items.Length);
             }
             else
             {
-                Console.WriteLine("TCP " + clientId + " --> " + data);
+                Console.WriteLine();
+                //Console.WriteLine("TCP " + clientId + " --> " + data);
             }
             foreach (var item in items){
                 if (item.Length > 0)
@@ -160,9 +161,9 @@ namespace MRS.Hardware.UART_HTTP_bribge
 
                     if (serial.State >= UART.EDeviceState.PortOpen && serial.State < UART.EDeviceState.Offline)
                     {
-                        if (items.Length < 3)
+                        if (items.Length <= 20)
                         {
-                           // Console.WriteLine("TCP " + clientId + " --> " + item);
+                           Console.Write("TCP " + clientId + " --> " + item);
                         }
                         var serialized = item.Replace("[", "").Replace("]", "");
                         var bytesString = serialized.Split(new string[]{","}, StringSplitOptions.RemoveEmptyEntries);
