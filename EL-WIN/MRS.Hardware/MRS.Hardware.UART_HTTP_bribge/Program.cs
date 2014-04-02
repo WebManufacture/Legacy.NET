@@ -28,7 +28,7 @@ namespace MRS.Hardware.UART_HTTP_bribge
             var comPortSpeed = Convert.ToInt32(settings["COM_SPEED"]);
             var callbacks = settings["CALLBACK_CLIENTS"];
 
-            var callbackClients = JsonConvert.DeserializeObject<string[]>(callbacks);
+            var callbackClients = new String[]{callbacks};
 
             ComPortCFG = "{\"port\": \"" + comPort + "\", \"speed\":\"" + comPortSpeed + "\", \"state\": \"{0}\"}";
             
@@ -131,7 +131,14 @@ namespace MRS.Hardware.UART_HTTP_bribge
                 {
                     if (serial.State >= UART.EDeviceState.PortOpen && serial.State < UART.EDeviceState.Offline)
                     {
-                        serial.SendSized(JsonConvert.DeserializeObject<byte[]>(item));
+                        var serialized = item.Replace("[", "").Replace("]", "");
+                        var bytesString = serialized.Split(new string[]{","}, StringSplitOptions.RemoveEmptyEntries);
+                        var bytes = new byte[bytesString.Length];
+                        for (var i = 0; i < bytesString.Length; i++)
+                        {
+                            bytes[i] = Convert.ToByte(bytesString[i]);
+                        }
+                        serial.SendSized(bytes);
                     }
                     var sessions = socketServer.GetAllSessions();
                     var segment = getMessage("to-uart-data", item);
