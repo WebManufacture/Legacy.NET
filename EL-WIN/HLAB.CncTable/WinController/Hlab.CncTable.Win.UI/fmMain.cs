@@ -39,6 +39,7 @@ namespace Hlab.CncTable.Win.UI
             CncController.Poll();
             TcpServerChangeState(Program.TcpServer.State);
             HttpServerChangeState(Program.HttpServer.State);
+            lblSerialStatus.Text += " (" + Program.SerialPort.PortName + ") ";
             ChangeState(Program.SerialPort.GetState());
         }
 
