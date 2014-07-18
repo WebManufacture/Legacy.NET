@@ -35,7 +35,7 @@ namespace Hlab.CncTable.Win.UI
             Program.TcpServer.OnServerState += TcpServerOnServerState;
             Program.SerialPort.OnStateChange += UART_Server_OnStateChange;
             Program.HttpServer.OnServerState += HttpServerOnServerState;
-            Program.HttpServer.OnData += HttpServer_OnData;
+           // Program.HttpServer.OnData += HttpServer_OnData;
             CncController.Poll();
             TcpServerChangeState(Program.TcpServer.State);
             HttpServerChangeState(Program.HttpServer.State);
