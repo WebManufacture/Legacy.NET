@@ -10,7 +10,6 @@ using MRS.Hardware.UART;
 namespace MRS.Hardware.Server
 {
     public delegate void MessageHandler(MotorState state);
-    public delegate void ProgramStateHandler(CncProgramState state);
     public delegate void CommandHandler(MotorCommand state);
 
     public class CncController

@@ -6,6 +6,7 @@ using Newtonsoft.Json;
 
 namespace MRS.Hardware.Server
 {
+
     public class MotorState
     {
         public static int loadInt(byte[] arr, int index)
@@ -39,6 +40,11 @@ namespace MRS.Hardware.Server
         public CommandType Command
         {
             get { return (CommandType)command; }
+        }
+
+        public CncState State
+        {
+            get { return (CncState)state; }
         }
 
         public override string ToString()
@@ -218,6 +224,16 @@ namespace MRS.Hardware.Server
 
     }
 
+    public enum CncState : byte
+    {
+        Info = 0,
+        Working = 1,
+        Completed = 2,
+        Paused = 3,
+        Error = 4,
+        Aborted = 5
+    }
+    
     public enum CncProgramState : byte
     {
         NotStarted,

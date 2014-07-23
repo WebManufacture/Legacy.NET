@@ -25,6 +25,7 @@ namespace Hlab.CncTable.Win.UI
         }
 
         fmControl controlForm = new fmControl();
+        CncProgram currentProgramm = null;
 
         private void fmMain_Load(object sender, EventArgs e)
         {
@@ -35,7 +36,7 @@ namespace Hlab.CncTable.Win.UI
             Program.TcpServer.OnServerState += TcpServerOnServerState;
             Program.SerialPort.OnStateChange += UART_Server_OnStateChange;
             Program.HttpServer.OnServerState += HttpServerOnServerState;
-           // Program.HttpServer.OnData += HttpServer_OnData;
+            Program.HttpServer.OnData += HttpServer_OnData;
             CncController.Poll();
             TcpServerChangeState(Program.TcpServer.State);
             HttpServerChangeState(Program.HttpServer.State);
@@ -47,7 +48,8 @@ namespace Hlab.CncTable.Win.UI
         {
             if (data.StartsWith("["))
             {
-                //CncProgram.NewProgram(CncProgram.FromJSON(data));
+                currentProgramm = new CncProgram(data);
+                currentProgramm.Start();
             }
             else
             {
