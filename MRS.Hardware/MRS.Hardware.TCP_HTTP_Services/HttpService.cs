@@ -17,7 +17,7 @@ namespace MRS.Hardware.CommunicationsServices
         Offline
     }
 
-    public delegate void OnHttpDataHandler(HttpListenerContext context, string data);
+    public delegate void OnHttpDataHandler(string data);
     public delegate void OnHttpConnectHandler(HttpListenerContext context);
     public delegate void OnHttpServerStateHandler(HttpServerState state);
 
@@ -157,10 +157,14 @@ namespace MRS.Hardware.CommunicationsServices
             var hb = 0;
             while (Thread.CurrentThread.ThreadState == ThreadState.Running)
             {
-                while (Messages.Count > 0)
+                while (true)
                 {
+                    var message = "";
+                    lock(Messages){
+                        if (Messages.Count == 0) break;
+                        message = Messages.Dequeue();
+                    }
                     Thread.Sleep(50);
-                    var message = Messages.Dequeue();
                     try
                     {
                         var data = Encoding.UTF8.GetBytes(message);
@@ -201,7 +205,7 @@ namespace MRS.Hardware.CommunicationsServices
             context.Response.Close();
             if (OnData != null)
             {
-                OnData(context, data);
+                OnData(data);
             }
         }
 
