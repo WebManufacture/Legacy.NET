@@ -160,6 +160,7 @@ namespace Hlab.CncTable.Win.UI
                         lblProgram.Text = "IDLE";
                         lblProgram.ForeColor = Color.Gray;
                     }
+
                 }
                 if (dState.state == 1)
                 {
@@ -196,8 +197,8 @@ namespace Hlab.CncTable.Win.UI
                 point = new Point(dState.x/5, dState.y/5);
                 color = Color.Green;
                 pBox.Refresh();
-                lblA.Text = CncController.StateA.ToString();
-                lblB.Text = CncController.StateB.ToString();
+                lblA.Text = dState.stateA.ToString();
+                lblB.Text = dState.stateB.ToString();
             }
             else
             {
