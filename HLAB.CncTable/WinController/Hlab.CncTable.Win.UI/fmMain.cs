@@ -184,6 +184,16 @@ namespace Hlab.CncTable.Win.UI
                     lblY.Text = dState.y + " - " + dState.yLimit;
                     lblZ.Text = dState.z + " - " + dState.zLimit;
                 }
+                if (dState.state == 3)
+                {
+                    lblCommand.Text = dState.Command.ToString();
+                    lblCommand.ForeColor = Color.Orange;
+                    lblProgram.Text = "(PAUSE) " + dState.line;
+                    lblX.Text = dState.x + " - " + dState.xLimit;
+                    lblY.Text = dState.y + " - " + dState.yLimit;
+                    lblZ.Text = dState.z + " - " + dState.zLimit;
+                    //log.AppendText(DateTime.Now.ToString("HH:mm:ss") + "<" + format + "\n");
+                }
                 if (dState.state == 4)
                 {
                     lblCommand.Text = dState.Command.ToString();

@@ -91,6 +91,7 @@ namespace MRS.Hardware.UART
             }
             device.ReadTimeout = timeout;
             device.WriteTimeout = timeout;
+            PortName = portName;
         }
 
         public string Connect()
