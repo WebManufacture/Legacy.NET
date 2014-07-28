@@ -100,19 +100,17 @@ namespace MRS.Hardware.Server
 
         private void CncControllerOnOnMessage(MotorState obj)
         {
+            if (obj.Command == CommandType.Stop)
+            {
+                Abort();
+                 return;
+            }
             if (obj.line > 0)
             {
                 switch (obj.State){
                     case CncState.Completed:
-                        if (obj.Command == CommandType.Stop)
-                        {
-                            Abort();
-                        }
-                        else
-                        {
-                            NextCommand(obj);
-                        }
-                    break;
+                        NextCommand(obj);
+                        break;
                     case CncState.Error:
                     case CncState.Aborted:
                         Stop();
