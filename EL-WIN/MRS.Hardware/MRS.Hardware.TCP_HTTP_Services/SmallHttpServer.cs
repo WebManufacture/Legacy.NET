@@ -3,192 +3,160 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Net;
-using System.Security.Authentication.ExtendedProtection;
+using System.Net.Sockets;
 using System.Text;
 using System.Threading;
-using Newtonsoft.Json;
-using MRS.Hardware.UART;
 
 namespace MRS.Hardware.CommunicationsServices
 {
-    public enum HttpClientState
+    public class SmallHttpServer
     {
-        Noclient = 0,
-        Connected = 1,
-        Online = 2,
-        Disconnected = 10,
-        Offline = 100
-    }
+        protected Queue<string> Messages;
 
-    public delegate void OnHttpClientStateHandler(HttpClientState state);
+        public event OnHttpDataHandler OnData;
+        public event OnHttpConnectHandler OnConnect;
 
-    public class HttpToUartBridge
-    {
-        public event OnHttpClientStateHandler OnClientState;
+        private HttpListener listener;
 
-        public HttpClientState ClientState;
-
-        private HttpListener uartListener;
         private BackgroundWorker worker;
+
         private int port;
 
-        public HttpToUartBridge(int portNum, Serial uart)
+        public int Port
         {
-            this.port = portNum;
-            ClientState = HttpClientState.Noclient;
-            OnClientState += OnOnClientState;
-            //CncController.OnMessage += CncControllerOnOnMessage;
-            if (worker == null)
+            get
             {
-                worker = new BackgroundWorker();
-                worker.DoWork += worker_DoWork;
-                worker.WorkerSupportsCancellation = true;
+                return port;
             }
-            Open();
+        }
+        
+        public SmallHttpServer(int port)
+        {
+            this.port = port;
+            Messages = new Queue<string>();
+            listener = new HttpListener();
+            listener.Prefixes.Add("http://+:" + this.port + "/");
+            listener.AuthenticationSchemes = AuthenticationSchemes.Anonymous;
+            worker = new BackgroundWorker();
+            worker.DoWork += new DoWorkEventHandler(worker_DoWork);
+            worker.WorkerSupportsCancellation = true;
         }
 
-        public void Open()
+        public void Start()
         {
-            if (uartListener == null)
+            if (!listener.IsListening)
             {
-                uartListener = new HttpListener();
-                uartListener.Prefixes.Add("http://+:" + this.port + "/");
+                listener.Start();
             }
-            if (!uartListener.IsListening) {
-                uartListener.Start();
-            }
-            if (worker != null)
-            {
-                worker.CancelAsync();
-                while (worker.IsBusy)
-                {
+            worker.RunWorkerAsync(port);
+        }
 
+        public void Stop()
+        {
+            if (listener.IsListening)
+            {
+                listener.Stop();
+            }
+            worker.CancelAsync();
+        }
+
+        void worker_DoWork(object sender, DoWorkEventArgs e)
+        {
+            var worker = (BackgroundWorker)sender;
+            while (!worker.CancellationPending && listener.IsListening)
+            {
+                try
+                {
+                    var context = listener.GetContext();
+                    AcceptClient(context);
+                }
+                catch (Exception err)
+                {
+                    Thread.Sleep(100);
                 }
             }
-            worker.RunWorkerAsync();
         }
 
-        private void OnOnClientState(HttpClientState state)
+        public void AcceptClient(HttpListenerContext context)
         {
-            ClientState = state;
+            context.Response.AddHeader("Access-Control-Allow-Methods", "POST,GET,OPTIONS");
+            context.Response.AddHeader("Access-Control-Request-Header", "X-Prototype-Version, x-requested-with");
+            context.Response.AddHeader("Access-Control-Allow-Origin", "*");
+            context.Response.ContentType = "text/json";
+            context.Response.StatusCode = 200;
+            context.Response.ContentEncoding = Encoding.UTF8;
+            context.Response.SendChunked = false;
+            context.Response.KeepAlive = false;
+            if (OnConnect != null)
+            {
+                OnConnect(context);
+            }
+            if (context.Request.HttpMethod == "GET")
+            {
+                SendData(context);
+                context.Response.OutputStream.Flush();
+                context.Response.StatusCode = 200;
+                context.Response.Close();
+                return;
+            }
+            if (context.Request.HttpMethod == "POST")
+            {
+                ReceiveData(context);
+                context.Response.OutputStream.Flush();
+                context.Response.StatusCode = 200;
+                context.Response.Close();
+                return;
+            }
+            context.Response.StatusCode = 401;
+            context.Response.Close();
+        }
+
+        public void Send(string data)
+        {
+            if (Messages.Count < 100)
+            {
+                Messages.Enqueue(data);
+            }
+        }
+
+        public byte CharToByte(char item)
+        {
+            return Encoding.UTF8.GetBytes(item + "")[0];
+        }
+
+        private void SendData(HttpListenerContext context)
+        {
+            if (Messages.Count > 0)
+            {
+                context.Response.OutputStream.WriteByte(CharToByte('['));
+                string item;
+                while((item = Messages.Dequeue()) != null){
+                    var data = Encoding.UTF8.GetBytes(item);
+                    context.Response.OutputStream.Write(data, 0, data.Length);
+                    if (Messages.Count > 0) 
+                        context.Response.OutputStream.WriteByte(CharToByte(','));
+                }
+                context.Response.OutputStream.WriteByte(CharToByte(']'));
+            }
+        }
+
+
+        private void ReceiveData(HttpListenerContext context)
+        {
+            var reader = new StreamReader(context.Request.InputStream, true);
+            var data = reader.ReadToEnd();
+            reader.Close();
+            if (OnData != null)
+            {
+                OnData(data);
+            }
         }
 
         public void Close()
         {
-            if (worker != null)
-            {
-                worker.CancelAsync();
-            }
-            if (uartListener != null)
-            {
-                uartListener.Close();
-                uartListener = null;
-            }
-        }
-
-        private void worker_DoWork(object sender, DoWorkEventArgs e)
-        {
-          /*  var worker = (BackgroundWorker)sender;
-            while (!worker.CancellationPending && uartListener != null && uartListener.IsListening)
-            {
-                var context = uartListener.GetContext();
-                if (worker.CancellationPending || !uartListener.IsListening)
-                {
-                    context.Response.Close();
-                    break;
-                }
-                if (OnClientState != null)
-                {
-                    OnClientState(HttpClientState.Connected);
-                }
-                if (Uart.State < EDeviceState.Online)
-                {
-                    Thread.Sleep(100);
-                    continue;
-                }
-                try
-                {
-                    var context = uartListener.GetContext();
-                    if (worker.CancellationPending || !uartListener.IsListening)
-                    {
-                        context.Response.Close();
-                        break;
-                    }
-                    if (OnClientState != null)
-                    {
-                        OnClientState(HttpClientState.Connected);
-                    }
-                    context.Response.AddHeader("Access-Control-Allow-Methods", "POST,GET,OPTIONS");
-                    context.Response.AddHeader("Access-Control-Request-Header", "X-Prototype-Version, x-requested-with");
-                    context.Response.AddHeader("Access-Control-Allow-Origin", "*");
-                    context.Response.ContentType = "text/json";
-                    context.Response.ContentEncoding = Encoding.UTF8;
-                    context.Response.SendChunked = true;
-                    context.Response.KeepAlive = false;
-                    context.Response.OutputStream.Flush();
-                    if (OnClientState != null)
-                    {
-                        OnClientState(HttpClientState.Online);
-                    }
-                    CncController.GetStateAsync();
-                    MotorCommand outCommand = null;
-                    CncProgramState? programState = null;
-                    MotorState stateMessage = null;
-                    var timeout = 1000;
-                    while (timeout > 0 && !worker.CancellationPending && uartListener.IsListening)
-                    {
-                        //Thread.Sleep(100);
-                        if (worker.CancellationPending || Uart.State < EDeviceState.Online)
-                        {
-                            //context.Response.Close();
-                            break;
-                        }
-                        //timeout--;
-                        List<string> states = new List<string>();
-                        if (CncController.LastCommand != outCommand && CncController.LastCommand != null)
-                        {
-                            outCommand = CncController.LastCommand;
-                            states.Add(outCommand.ToString());
-                        }
-                        if (!programState.HasValue || CncProgram.State != programState)
-                        {
-                            programState = CncProgram.State;
-                            states.Add("{\"state\":\"" + programState.Value.ToString() + "\", \"line\":" +
-                                       CncProgram.CurrentLine + ",\"type\" : \"program-state\"}");
-                        }
-                        if (CncController.LastState != null && CncController.LastState != stateMessage)
-                        {
-                            stateMessage = CncController.LastState;
-                            states.Add(stateMessage.ToString());
-                        }
-                        if (states.Count > 0)
-                        {
-                            WriteContext(context, "[" + String.Join(",", states.ToArray()) + "]");
-                        }
-                        context.Response.OutputStream.Flush();
-                    }
-                    context.Response.Close();
-                    if (OnClientState != null)
-                    {
-                        OnClientState(HttpClientState.Disconnected);
-                    }
-
-                }
-                catch (Exception error)
-                {
-                    break;
-                }
-            }
-            if (OnClientState != null)
-            {
-                OnClientState(HttpClientState.Offline);
-            }*/
-        }
-
-        private static void WriteContext(HttpListenerContext context, string str)
-        {
-            var data = Encoding.UTF8.GetBytes(str);
-            context.Response.OutputStream.Write(data, 0, data.Length);
+            Messages.Clear();
+            worker.CancelAsync();
+            listener.Close();
         }
     }
 }
