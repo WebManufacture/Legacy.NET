@@ -11,3 +11,16 @@ D:\EL-WIN\HLab.eBox\Win.UI\obj\Release\HLab.eBox.Properties.Resources.resources
 D:\EL-WIN\HLab.eBox\Win.UI\obj\Release\Win.UI.csproj.GenerateResource.Cache
 D:\EL-WIN\HLab.eBox\Win.UI\obj\Release\HLab.eBox.exe
 D:\EL-WIN\HLab.eBox\Win.UI\obj\Release\HLab.eBox.pdb
+D:\DEV\EL-WIN\HLab.eBox\Win.UI\bin\Release\HLab.eBox.exe.config
+D:\DEV\EL-WIN\HLab.eBox\Win.UI\obj\Release\HLab.eBox.exe
+D:\DEV\EL-WIN\HLab.eBox\Win.UI\obj\Release\HLab.eBox.pdb
+D:\DEV\EL-WIN\HLab.eBox\Win.UI\bin\Release\HLab.eBox.exe
+D:\DEV\EL-WIN\HLab.eBox\Win.UI\bin\Release\HLab.eBox.pdb
+D:\DEV\EL-WIN\HLab.eBox\Win.UI\bin\Release\MRS.Hardware.UART.dll
+D:\DEV\EL-WIN\HLab.eBox\Win.UI\bin\Release\FTD2XX_NET.dll
+D:\DEV\EL-WIN\HLab.eBox\Win.UI\bin\Release\MRS.Hardware.UART.pdb
+D:\DEV\EL-WIN\HLab.eBox\Win.UI\bin\Release\FTD2XX_NET.xml
+D:\DEV\EL-WIN\HLab.eBox\Win.UI\obj\Release\Win.UI.csprojResolveAssemblyReference.cache
+D:\DEV\EL-WIN\HLab.eBox\Win.UI\obj\Release\HLab.eBox.fmMain.resources
+D:\DEV\EL-WIN\HLab.eBox\Win.UI\obj\Release\HLab.eBox.Properties.Resources.resources
+D:\DEV\EL-WIN\HLab.eBox\Win.UI\obj\Release\Win.UI.csproj.GenerateResource.Cache

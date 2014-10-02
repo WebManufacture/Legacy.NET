@@ -170,7 +170,7 @@ namespace HLab.eBox
             value = dta[index + 1];
             start = (ushort)(dta[index + 2] * 256 + dta[index + 3]);
         }
-        /*
+        
         public bool IsActive
         {
             get
@@ -186,8 +186,7 @@ namespace HLab.eBox
                 }
             }
         }
-        */
-
+        
         public TaskTypes TaskType
         {
             get{
