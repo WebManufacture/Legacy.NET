@@ -186,7 +186,8 @@ namespace HLab.eBox
 
         void port_OnReceive(byte[] data)
         {
-            if ((UartCommand)data[0] == UartCommand.get)
+            var command = (UartCommand)data[0];
+            if (command == UartCommand.get)
             {
                 OnDeviceStateChange(EDeviceState.Online);
                 ushort addr = (ushort)(data[1] << 8);
@@ -212,7 +213,7 @@ namespace HLab.eBox
                 addr++;
                 SendCommand(UartCommand.get, addr);
             }
-            if ((UartCommand)data[0] == UartCommand.set)
+            if (command == UartCommand.set)
             {
                 ushort addr = (ushort)(data[1] << 8);
                 addr += data[2];
@@ -304,7 +305,7 @@ namespace HLab.eBox
         private void button21_Click(object sender, EventArgs e)
         {
             var btn = sender as Button;
-            var pn = btn.Text == "B" ? 20 : (btn.Text == "R" ? 21 : (btn.Text == "G" ? 22 : 0));
+            var pn = btn.Text == "B" ? 16 : (btn.Text == "R" ? 18 : (btn.Text == "G" ? 17 : 0));
             Task task = new Task();
             if (btn.ForeColor == Color.Black)
             {
@@ -318,7 +319,7 @@ namespace HLab.eBox
             }
             task.start = 0;
             task.Port = (byte)pn;
-            task.TaskType = 0;
+            task.TaskType = TaskTypes.pin;
             //task.IsActive = true;
             SendCommand(UartCommand.task, 0, task);
         }
@@ -398,8 +399,15 @@ namespace HLab.eBox
                     if (item.StartsWith("V"))
                     {
                         item = item.Remove(0, 1);
-                        task.TaskType = TaskTypes.pin;
                         task.PercentValue = Byte.Parse(item);
+                        if (task.value != 100 && task.PercentValue != 0)
+                        {
+                            task.TaskType = TaskTypes.pwm;
+                        }
+                        else
+                        {
+                            task.TaskType = TaskTypes.pin;
+                        }
                         continue;
                     }
                     if (item.StartsWith("D"))
