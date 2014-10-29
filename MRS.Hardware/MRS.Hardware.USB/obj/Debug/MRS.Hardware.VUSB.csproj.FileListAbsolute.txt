@@ -1,6 +1,0 @@
-D:\EL-WIN\MRS.Hardware\MRS.Hardware.USB\bin\Debug\libusb0.dll
-D:\EL-WIN\MRS.Hardware\MRS.Hardware.USB\bin\Debug\MRS.Hardware.dll
-D:\EL-WIN\MRS.Hardware\MRS.Hardware.USB\bin\Debug\MRS.Hardware.pdb
-D:\EL-WIN\MRS.Hardware\MRS.Hardware.USB\obj\Debug\MRS.Hardware.dll
-D:\EL-WIN\MRS.Hardware\MRS.Hardware.USB\obj\Debug\MRS.Hardware.pdb
-D:\EL-WIN\MRS.Hardware\MRS.Hardware.USB\obj\Debug\MRS.Hardware.VUSB.csprojResolveAssemblyReference.cache
