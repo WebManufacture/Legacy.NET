@@ -8,13 +8,15 @@ using System.Threading;
 //using MRS.Hardware.CommunicationsServices;
 using System.Net;
 using SuperWebSocket;
+using MRS.Hardware.CommunicationsServices;
 
 namespace MRS.Hardware.UART_HTTP_bribge
 {
     class Program
     {
         static SuperWebSocket.WebSocketServer socketServer;
-        static TcpService tcpService;
+        static SmallTcpService tcpService;
+        static SmallHttpServer httpServer;
         static UART.Serial serial;
         static string ComPortCFG;
         static string SocketMsg = "{\"type\":\"{0}\", \"data\":{1} }";
@@ -27,24 +29,23 @@ namespace MRS.Hardware.UART_HTTP_bribge
             var comPortSpeed = Convert.ToInt32(settings["COM_SPEED"]);
             var callbacks = settings["CALLBACK_CLIENTS"];
 
-            var callbackClients = new String[]{callbacks};
+            var callbackClients = callbacks.Split(new char[]{','}, StringSplitOptions.RemoveEmptyEntries) ;
 
             ComPortCFG = "{\"port\": \"" + comPort + "\", \"speed\":\"" + comPortSpeed + "\", \"state\": \"{0}\"}";
             
-            //server = new HardwareHttpServer(httpPort);
             Console.WriteLine("HTTP: " + httpPort);
-            Console.WriteLine("WEB-SOCKET: " + wsPort);
-            //server.OnConnect += server_OnConnect;
-            //server.OnData += server_OnData;
-           // server.OnServerState += server_OnState;
-            //server.Start();
+            httpServer = new SmallHttpServer(httpPort);
+            //httpServer.OnConnect += httpServer_OnConnect;
+            httpServer.OnData += httpServer_OnData;
+            httpServer.Start();
 
+            Console.WriteLine("WEB-SOCKET: " + wsPort);
             socketServer = new WebSocketServer();
             socketServer.Setup(wsPort);
             socketServer.NewMessageReceived += socketServer_NewMessageReceived;
             socketServer.SessionClosed += socketServer_SessionClosed;
             socketServer.NewSessionConnected += socketServer_NewSessionConnected;
-            //socketServer.Start();
+            socketServer.Start();
 
 
             serial = new UART.Serial(comPort, comPortSpeed);
@@ -55,7 +56,7 @@ namespace MRS.Hardware.UART_HTTP_bribge
             serial.Connect();
 
 
-            tcpService = new TcpService();
+            tcpService = new SmallTcpService();
             tcpService.OnData += tcpService_OnData;
             tcpService.OnClientState += tcpService_OnClientState;
             tcpService.Start(callbackClients);
@@ -86,7 +87,7 @@ namespace MRS.Hardware.UART_HTTP_bribge
 
         static void socketServer_NewMessageReceived(WebSocketSession thisSession, string value)
         {
-            Console.WriteLine("WS --> " + value);
+            Console.WriteLine("WS: " + DateTime.Now.ToString("hh:mm:ss.f") + " --> " + value);
             if (serial.State >= UART.EDeviceState.PortOpen && serial.State < UART.EDeviceState.Offline)
             {
                 serial.SendSized(ParseArray(value));
@@ -101,6 +102,24 @@ namespace MRS.Hardware.UART_HTTP_bribge
                 }
             }
             
+        }
+
+
+        private static void httpServer_OnData(string value)
+        {
+            Console.WriteLine("HTTP --> " + value);
+            if (serial.State >= UART.EDeviceState.PortOpen && serial.State < UART.EDeviceState.Offline)
+            {
+                serial.SendSized(ParseArray(value));
+            }
+            var sessions = socketServer.GetAllSessions();
+            var segment = getMessage("to-uart-data", value);
+        }
+
+        private static void httpServer_OnConnect(HttpListenerContext context)
+        {
+            Console.WriteLine("HTTP client connected");
+            httpServer.Send(getMessage("config", ComPortCFG.Replace("{0}", serial.State + "")));
         }
 
 
@@ -211,6 +230,11 @@ namespace MRS.Hardware.UART_HTTP_bribge
                 {
                     session.Send(segment);
                 }
+            }
+            if (httpServer != null && httpServer.Connected)
+            {
+                var segment = getMessage("from-uart-data", JsonArray(data));
+                httpServer.Send(segment);
             }
             if (tcpService != null)
             {

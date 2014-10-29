@@ -13,7 +13,6 @@ namespace MRS.Hardware.UART_TCP_bribge
     class Program
     {
         static HardwareTcpServer server;
-        static HttpToUartBridge bridge;
         static UART.Serial serial;
 
         static void Main(string[] args)
