@@ -1,6 +1,0 @@
-D:\Projects\Electronics\MRS.Hardware\MRS.Hardware.USB\obj\Debug\ResolveAssemblyReference.cache
-D:\Projects\Electronics\MRS.Hardware\MRS.Hardware.USB\bin\Debug\MRS.Hardware.dll
-D:\Projects\Electronics\MRS.Hardware\MRS.Hardware.USB\bin\Debug\MRS.Hardware.pdb
-D:\Projects\Electronics\MRS.Hardware\MRS.Hardware.USB\obj\Debug\MRS.Hardware.dll
-D:\Projects\Electronics\MRS.Hardware\MRS.Hardware.USB\obj\Debug\MRS.Hardware.pdb
-D:\Projects\Electronics\MRS.Hardware\MRS.Hardware.USB\bin\Debug\libusb0.dll
