@@ -4,21 +4,17 @@ using System.ComponentModel;
 using System.Net.Sockets;
 using System.Threading;
 
-namespace MRS.Hardware.UART_HTTP_bribge
-{
-    public delegate void OnTcpDataHandler(int clientId, byte[] data);
-
-    public delegate void OnClientStateHandler(int clientId, string message);
-    
-    public class TcpService
+namespace MRS.Hardware.CommunicationsServices
+{    
+    public class SmallTcpService
     {
         protected List<Socket> sockets;
         protected List<System.Net.IPEndPoint> endPoints = new List<System.Net.IPEndPoint>();
 
         public event OnTcpDataHandler OnData;
         public event OnClientStateHandler OnClientState;
-                
-        public TcpService()
+
+        public SmallTcpService()
         {
            sockets = new List<Socket>();           
         }

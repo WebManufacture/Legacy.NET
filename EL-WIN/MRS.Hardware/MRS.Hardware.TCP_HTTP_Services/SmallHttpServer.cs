@@ -13,6 +13,7 @@ namespace MRS.Hardware.CommunicationsServices
     {
         protected Queue<string> Messages;
 
+        public bool Connected { get; set; }
         public event OnHttpDataHandler OnData;
         public event OnHttpConnectHandler OnConnect;
 
@@ -33,6 +34,7 @@ namespace MRS.Hardware.CommunicationsServices
         public SmallHttpServer(int port)
         {
             this.port = port;
+            Connected = false;
             Messages = new Queue<string>();
             listener = new HttpListener();
             listener.Prefixes.Add("http://+:" + this.port + "/");
@@ -79,6 +81,7 @@ namespace MRS.Hardware.CommunicationsServices
 
         public void AcceptClient(HttpListenerContext context)
         {
+            Connected = true;
             context.Response.AddHeader("Access-Control-Allow-Methods", "POST,GET,OPTIONS");
             context.Response.AddHeader("Access-Control-Request-Header", "X-Prototype-Version, x-requested-with");
             context.Response.AddHeader("Access-Control-Allow-Origin", "*");
@@ -158,5 +161,7 @@ namespace MRS.Hardware.CommunicationsServices
             worker.CancelAsync();
             listener.Close();
         }
+
+        
     }
 }
