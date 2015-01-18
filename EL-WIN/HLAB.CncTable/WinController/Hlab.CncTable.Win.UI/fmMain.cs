@@ -6,6 +6,7 @@ using System.Drawing;
 using System.Globalization;
 using System.IO.Ports;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Windows.Forms;
 using MRS.Hardware.CommunicationsServices;
@@ -24,7 +25,7 @@ namespace Hlab.CncTable.Win.UI
             InitializeComponent();
         }
 
-        fmControl controlForm = new fmControl();
+        fmControl controlForm;
         CncProgram currentProgramm = null;
 
         private void fmMain_Load(object sender, EventArgs e)
@@ -44,7 +45,7 @@ namespace Hlab.CncTable.Win.UI
             ChangeState(Program.SerialPort.GetState());
         }
 
-        void HttpServer_OnData(string data)
+        void HttpServer_OnData(string data, HttpListenerContext context)
         {
             if (data.StartsWith("["))
             {
@@ -246,7 +247,7 @@ namespace Hlab.CncTable.Win.UI
             lblProgram.Text = state.ToString();
         }
 
-        void UART_Server_OnStateChange(EDeviceState state)
+        void UART_Server_OnStateChange(EDeviceState state, SerialManager sm)
         {
             try
             {
@@ -410,6 +411,7 @@ namespace Hlab.CncTable.Win.UI
 
         private void controlsToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            controlForm = new fmControl();
             controlForm.Show();
         }
 

@@ -1,9 +1,5 @@
 ﻿namespace MRS.Hardware.UART
 {
-    public delegate void OnReceiveHandler(byte[] data);
-    public delegate void OnReceiveByteHandler(byte data);
-    public delegate void OnStateChangeHandler(EDeviceState state);
-
     public enum EDeviceState
     {
         Unknown,
@@ -23,7 +19,6 @@
     public enum UARTReadingState
     {
         free,
-        reading,
-        readingSized
+        reading
     }
 }

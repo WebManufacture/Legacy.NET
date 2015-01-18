@@ -5,11 +5,11 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>9.0.30729</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{6E23EF9C-D77A-46B5-83EE-802933D96C73}</ProjectGuid>
+    <ProjectGuid>{F8251169-D7B4-4C2C-8D9B-A16EB2D496CB}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Hlab.CncTable.Win.UI</RootNamespace>
-    <AssemblyName>Hlab.CncTable.Win.UI</AssemblyName>
+    <RootNamespace>MRS.Hardware.UI.Analyzer</RootNamespace>
+    <AssemblyName>UI.Analyzer</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <FileUpgradeFlags>
@@ -17,21 +17,6 @@
     <UpgradeBackupLocation>
     </UpgradeBackupLocation>
     <OldToolsVersion>3.5</OldToolsVersion>
-    <PublishUrl>publish\</PublishUrl>
-    <Install>true</Install>
-    <InstallFrom>Disk</InstallFrom>
-    <UpdateEnabled>false</UpdateEnabled>
-    <UpdateMode>Foreground</UpdateMode>
-    <UpdateInterval>7</UpdateInterval>
-    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
-    <UpdatePeriodically>false</UpdatePeriodically>
-    <UpdateRequired>false</UpdateRequired>
-    <MapFileExtensions>true</MapFileExtensions>
-    <ApplicationRevision>0</ApplicationRevision>
-    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
-    <IsWebBootstrapper>false</IsWebBootstrapper>
-    <UseApplicationTrust>false</UseApplicationTrust>
-    <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -45,12 +30,19 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>..\..\Release\</OutputPath>
+    <OutputPath>..\Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="FTD2XX_NET, Version=1.0.6.0, Culture=neutral, PublicKeyToken=61a8105588f51b1f, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\MRS.Hardware\Lib\FTD2XX_NET.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\..\Lib\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.configuration" />
     <Reference Include="System.Core">
@@ -69,11 +61,24 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="fmControl.cs">
+    <Compile Include="ADCmeasure.cs" />
+    <Compile Include="fmADC.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="fmControl.Designer.cs">
-      <DependentUpon>fmControl.cs</DependentUpon>
+    <Compile Include="fmADC.Designer.cs">
+      <DependentUpon>fmADC.cs</DependentUpon>
+    </Compile>
+    <Compile Include="fmAnalizer.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="fmAnalizer.Designer.cs">
+      <DependentUpon>fmAnalizer.cs</DependentUpon>
+    </Compile>
+    <Compile Include="fmBits.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="fmBits.Designer.cs">
+      <DependentUpon>fmBits.cs</DependentUpon>
     </Compile>
     <Compile Include="fmMain.cs">
       <SubType>Form</SubType>
@@ -81,65 +86,56 @@
     <Compile Include="fmMain.Designer.cs">
       <DependentUpon>fmMain.cs</DependentUpon>
     </Compile>
+    <Compile Include="fmStats.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="fmStats.Designer.cs">
+      <DependentUpon>fmStats.cs</DependentUpon>
+    </Compile>
+    <Compile Include="fmUART.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="fmUART.Designer.cs">
+      <DependentUpon>fmUART.cs</DependentUpon>
+    </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <EmbeddedResource Include="fmControl.resx">
-      <DependentUpon>fmControl.cs</DependentUpon>
+    <EmbeddedResource Include="fmADC.resx">
+      <DependentUpon>fmADC.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="fmAnalizer.resx">
+      <DependentUpon>fmAnalizer.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="fmBits.resx">
+      <DependentUpon>fmBits.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="fmMain.resx">
       <DependentUpon>fmMain.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Properties\Resources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-      <SubType>Designer</SubType>
+    <EmbeddedResource Include="fmStats.resx">
+      <DependentUpon>fmStats.cs</DependentUpon>
     </EmbeddedResource>
-    <Compile Include="Properties\Resources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Resources.resx</DependentUpon>
-      <DesignTime>True</DesignTime>
-    </Compile>
-    <None Include="app.config">
-      <SubType>Designer</SubType>
+    <EmbeddedResource Include="fmUART.resx">
+      <DependentUpon>fmUART.cs</DependentUpon>
+    </EmbeddedResource>
+    <None Include="App.config">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="Properties\Settings.settings">
-      <Generator>SettingsSingleFileGenerator</Generator>
-      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
-    </None>
-    <Compile Include="Properties\Settings.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Settings.settings</DependentUpon>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-    </Compile>
   </ItemGroup>
   <ItemGroup>
-    <WCFMetadata Include="Service References\" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\..\MRS.Hardware\MRS.Hardware.TCP_HTTP_Services\MRS.Hardware.TCP_HTTP_Services.csproj">
-      <Project>{f43d7a7c-b7b7-4a31-865d-49d6a49f119c}</Project>
-      <Name>MRS.Hardware.TCP_HTTP_Services</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\MRS.Hardware\MRS.Hardware.UART\MRS.Hardware.UART.csproj">
+    <ProjectReference Include="..\..\MRS.Hardware\MRS.Hardware.UART\MRS.Hardware.UART.csproj">
       <Project>{317ea2c1-614d-49ab-a36a-32b2cf788064}</Project>
       <Name>MRS.Hardware.UART</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Server\Hlab.CncTable.Server.csproj">
-      <Project>{7bedec1d-fbfb-4c0f-b76c-43a5816bac02}</Project>
-      <Name>Hlab.CncTable.Server</Name>
+    <ProjectReference Include="..\Complex.Library\Complex.Library.csproj">
+      <Project>{27b54c9a-77a7-4b8f-bfed-2640dd688893}</Project>
+      <Name>Complex.Library</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
-      <Visible>False</Visible>
-      <ProductName>.NET Framework 3.5 SP1 Client Profile</ProductName>
-      <Install>false</Install>
-    </BootstrapperPackage>
-    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
-      <Visible>False</Visible>
-      <ProductName>.NET Framework 3.5 SP1</ProductName>
-      <Install>true</Install>
-    </BootstrapperPackage>
+    <Content Include="StoredDevices.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

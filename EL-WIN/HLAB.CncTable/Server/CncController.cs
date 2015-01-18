@@ -16,7 +16,7 @@ namespace MRS.Hardware.Server
     {
         public static MotorState LastState = null;
         public static CncProgram Program;
-        public static Serial Uart = null;
+        public static SerialAddressedManager Uart = null;
         public static MotorCommand LastCommand = null;
         public static bool SpindleState = false;
         public static event MessageHandler OnMessage;
@@ -57,7 +57,7 @@ namespace MRS.Hardware.Server
 
         protected static bool initialized = false;
 
-        public static void ProcessMessage(byte[] data)
+        public static void ProcessMessage(byte[] data, SerialManager manager)
         {
             MotorState obj = MotorState.Deserialize(data);
             if (obj != null)
@@ -100,7 +100,7 @@ namespace MRS.Hardware.Server
                 return false;
             }
             LastCommand = command;
-            Uart.SendSized(command.Serialize(CncAddress));
+            Uart.Send(command.Serialize(CncAddress));
             command.Sended = true;
             if (OnCommand != null)
             {
@@ -125,7 +125,7 @@ namespace MRS.Hardware.Server
                 return false;
             }
             if (!Ready) throw new Exception("UART not ready!");
-            Uart.SendSized(MotorCommand.GetLowLevel(command, CncAddress));
+            Uart.Send(MotorCommand.GetLowLevel(command, CncAddress));
             return true;
         }
 
@@ -162,7 +162,7 @@ namespace MRS.Hardware.Server
             Uart.Close();
         }
 
-        public static void Init(Serial serialPort, string cfgPath, byte cncAddress)
+        public static void Init(SerialAddressedManager serialPort, string cfgPath, byte cncAddress)
         {
             CncController.cfgPath = cfgPath;
             CncAddress = cncAddress;

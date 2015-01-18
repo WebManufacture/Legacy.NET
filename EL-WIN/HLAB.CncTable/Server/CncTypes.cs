@@ -196,7 +196,6 @@ namespace MRS.Hardware.Server
             return str.Remove(str.Length - 1) + ", \"type\" : \"out-command\"}";
         }
 
-
         public byte[] Serialize(byte Address)
         {
             byte[] bytes = new byte[22];

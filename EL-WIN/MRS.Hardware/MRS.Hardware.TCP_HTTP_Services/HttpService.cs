@@ -17,7 +17,7 @@ namespace MRS.Hardware.CommunicationsServices
         Offline
     }
 
-    public delegate void OnHttpDataHandler(string data);
+    public delegate void OnHttpDataHandler(string data, HttpListenerContext context);
     public delegate void OnHttpConnectHandler(HttpListenerContext context);
     public delegate void OnHttpServerStateHandler(HttpServerState state);
 
@@ -205,7 +205,7 @@ namespace MRS.Hardware.CommunicationsServices
             context.Response.Close();
             if (OnData != null)
             {
-                OnData(data);
+                OnData(data, context);
             }
         }
 

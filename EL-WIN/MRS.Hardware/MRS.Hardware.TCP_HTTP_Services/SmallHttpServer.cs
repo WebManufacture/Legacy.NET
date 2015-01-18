@@ -151,7 +151,7 @@ namespace MRS.Hardware.CommunicationsServices
             reader.Close();
             if (OnData != null)
             {
-                OnData(data);
+                OnData(data, context);
             }
         }
 
