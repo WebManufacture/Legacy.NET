@@ -7,13 +7,14 @@ using System.Text;
 using System.Threading;
 using MRS.Hardware.CommunicationsServices;
 using System.Net;
+using MRS.Hardware.UART;
 
 namespace MRS.Hardware.UART_TCP_bribge
 {
     class Program
     {
         static HardwareTcpServer server;
-        static UART.Serial serial;
+        static SerialManager serial;
 
         static void Main(string[] args)
         {
@@ -21,7 +22,7 @@ namespace MRS.Hardware.UART_TCP_bribge
             var port = settings["COM_PORT"];
             var speed = Convert.ToInt32(settings["COM_SPEED"]);
             var tcpPort = Convert.ToInt32(settings["TCP_PORT"]);
-            serial = new UART.Serial(port, speed);
+            serial = new SerialManager(port, speed);
             Console.WriteLine("UART: " + port + " - " + speed);
             server = new HardwareTcpServer(tcpPort);
             server.OnServerState += server_OnServerState;
@@ -51,7 +52,7 @@ namespace MRS.Hardware.UART_TCP_bribge
             serial.Close();
         }
 
-        static void serial_OnStateChange(UART.EDeviceState state)
+        static void serial_OnStateChange(UART.EDeviceState state, SerialManager sm)
         {
             Console.WriteLine("UART -> " + state);
         }
@@ -68,10 +69,10 @@ namespace MRS.Hardware.UART_TCP_bribge
 
         static void server_OnData(int clientId, byte[] data)
         {
-            serial.SendSized(data);
+            serial.Send(data);
         }
 
-        static void serial_OnReceive(byte[] data)
+        static void serial_OnReceive(byte[] data, SerialManager sm)
         {
             server.Send(data);
         }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Net.Sockets;
+using System.Text;
 using System.Threading;
 
 namespace MRS.Hardware.CommunicationsServices
@@ -30,7 +31,7 @@ namespace MRS.Hardware.CommunicationsServices
                     Socket socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
                     if (OnClientState != null)
                     {
-                        OnClientState(-1, client + " connecting");
+                        OnClientState(-1, "connecting");
                     }
                     ConnectTcpClient(socket, parts[0], Convert.ToInt32(parts[1]));
                 }
@@ -83,6 +84,11 @@ namespace MRS.Hardware.CommunicationsServices
         public void Send(byte[] data)
         {
             this.Send(0, data);
+        }
+
+        public void Send(string data)
+        {
+            this.Send(0, Encoding.UTF8.GetBytes(data));
         }
         
         private void ClientThreadFunction(object obj)
