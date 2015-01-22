@@ -60,12 +60,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BitBangManager.cs" />
+    <Compile Include="SerialConfig.cs" />
     <Compile Include="XRoutingManager.cs" />
     <Compile Include="SerialAddressedManager.cs" />
     <Compile Include="SerialPacketManager.cs" />
     <Compile Include="Packets.cs" />
     <Compile Include="SerialManager.cs" />
-    <Compile Include="EDeviceState.cs" />
+    <Compile Include="General.cs" />
     <Compile Include="FtdiManager.cs" />
     <Compile Include="Misc.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

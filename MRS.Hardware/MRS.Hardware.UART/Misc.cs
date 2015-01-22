@@ -1,7 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
+using System.IO.Ports;
+using System.Threading;
+using System.IO.Ports;
 
 namespace MRS.Hardware.UART
 {
@@ -40,5 +44,18 @@ namespace MRS.Hardware.UART
         RS = 0x1E,//Record Separator= разделитель записей.
         US = 0x1F,//Unit Separator= разделитель юнитов. То есть поддерживалось 4 уровня структуризации данных: сообщение могло состоять из файлов= файлы из групп= группы из записей= записи из юнитов.
         DEL = 0x7F,//Delete= стереть последний символ. Символом DEL= состоящим в двоичном коде из всех единиц= можно было забить любой символ. Устройства и программы игнорировали DEL так же= как NUL. Код этого символа происходит из первых текстовых процессоров с памятью на перфоленте: в них удаление символа происходило забиванием его кода дырочками (обозначавшими логические единицы).
+    }
+
+
+    public static class Binary
+    {
+        public const byte BIT_0 = 1;
+        public const byte BIT_1 = 2;
+        public const byte BIT_2 = 4;
+        public const byte BIT_3 = 8;
+        public const byte BIT_4 = 16;
+        public const byte BIT_5 = 32;
+        public const byte BIT_6 = 64;
+        public const byte BIT_7 = 128;
     }
 }
