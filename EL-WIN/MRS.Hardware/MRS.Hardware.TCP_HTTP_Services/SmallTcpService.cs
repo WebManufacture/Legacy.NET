@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading;
 
 namespace MRS.Hardware.CommunicationsServices
-{    
+{
     public class SmallTcpService
     {
         protected List<Socket> sockets;
@@ -17,7 +17,7 @@ namespace MRS.Hardware.CommunicationsServices
 
         public SmallTcpService()
         {
-           sockets = new List<Socket>();           
+            sockets = new List<Socket>();
         }
 
         public void Start(string[] connectionPool)
@@ -46,18 +46,18 @@ namespace MRS.Hardware.CommunicationsServices
         {
             socket.SendTimeout = 100;
             var ips = System.Net.Dns.GetHostAddresses(host);
-                for (var i = 0; i < ips.Length; i++)
+            for (var i = 0; i < ips.Length; i++)
+            {
+                if (ips[i].AddressFamily == AddressFamily.InterNetwork)
                 {
-                    if (ips[i].AddressFamily == AddressFamily.InterNetwork)
-                    {
-                        endPoints.Add(new System.Net.IPEndPoint(ips[i], port));
-                        int clientId = sockets.Count;
-                        sockets.Add(socket);
-                        var client = new Thread(ClientThreadFunction);
-                        client.Start(clientId);
-                        return clientId;
-                    }
+                    endPoints.Add(new System.Net.IPEndPoint(ips[i], port));
+                    int clientId = sockets.Count;
+                    sockets.Add(socket);
+                    var client = new Thread(ClientThreadFunction);
+                    client.Start(clientId);
+                    return clientId;
                 }
+            }
             return -1;
         }
 
@@ -90,7 +90,7 @@ namespace MRS.Hardware.CommunicationsServices
         {
             this.Send(0, Encoding.UTF8.GetBytes(data));
         }
-        
+
         private void ClientThreadFunction(object obj)
         {
             var clientId = (int)obj;
@@ -121,7 +121,7 @@ namespace MRS.Hardware.CommunicationsServices
                 {
                     try
                     {
-                        
+
                         buf = new byte[socket.Available];
                         socket.Receive(buf);
                         if (OnData != null)

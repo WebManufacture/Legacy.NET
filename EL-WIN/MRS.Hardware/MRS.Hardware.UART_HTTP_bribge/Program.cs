@@ -10,13 +10,113 @@ using SuperWebSocket;
 using MRS.Hardware.CommunicationsServices;
 using MRS.Hardware.UART;
 using Newtonsoft.Json;
+using System.IO;
 
 namespace MRS.Hardware.UART_HTTP_bribge
 {
-    public struct SerialPacket
+    public enum SerialDirection : byte
     {
+        Error = 0,
+        ToUART = 1,
+        FromUART = 2
+    }
+
+    public struct SerialPacketSerialization
+    {
+        public SerialPacketSerialization(SerialPacket packet, SerialDirection direction)
+        {
+            PortName = packet.PortName;
+            Direction = direction;
+            Data = SerialPacket.SerializeData(packet.Data);
+            Time = DateTime.Now;
+        }
+
+        public SerialPacketSerialization(string portName, byte[] data, SerialDirection direction)
+        {
+            PortName = portName;
+            Direction = direction;
+            Data = SerialPacket.SerializeData(data);
+            Time = DateTime.Now;
+        }
+
+        public DateTime Time;
         public string PortName;
-        public byte[] Data;
+        public SerialDirection Direction;
+        public string Data;
+
+        public static SerialPacketSerialization Deserialize(string data)
+        {
+            return (SerialPacketSerialization)JsonConvert.DeserializeObject(data);
+        }
+
+        public string Serialize()
+        {
+            return JsonConvert.SerializeObject(this);
+        }
+    }
+
+    public class SerialPacket
+    {/*
+        public SerialPacket(){
+            PortName = "";
+            Data = null;
+            Direction = SerialDirection.FromUART;
+        }
+*/
+        public SerialPacket(string port, byte[] data)
+        {
+            PortName = port;
+            Data = data;
+        }
+
+        public string PortName = "";
+        public byte[] Data = null;
+
+
+        public static SerialPacket Deserialize(string data)
+        {
+            return (SerialPacket)JsonConvert.DeserializeObject(data);
+        }
+
+        public string Serialize()
+        {
+            return JsonConvert.SerializeObject(this);
+        }
+
+        public static string SerializeData(byte[] Data)
+        {
+            if (Data == null) return "[]";
+            var str = "[";
+            for (var i = 0; i < Data.Length; i++)
+            {
+                str += Data[i] + ",";
+            }
+            str = str.TrimEnd(',') + "]";
+            return str;
+        }
+    }
+
+    public struct ServerInfo
+    {
+        public string ServerId;
+        public DateTime Started;
+        public TimeSpan Uptime
+        {
+            get
+            {
+                return DateTime.Now - Started;
+            }
+        }
+        public string HttpAddr;
+        public int HttpPort;
+        public string SocketAddr;
+        public int SocketPort;
+        public string HttpInterface { get { return HttpAddr + ":" + HttpPort; } }
+        public string SocketInterface { get { return SocketAddr + ":" + SocketPort; } }
+        public byte SelfAddress;
+        public List<string> Serials;
+        public List<SerialConfig> Configs;
+        public List<string> CallbackClients;        
     }
 
     class Program
@@ -25,45 +125,46 @@ namespace MRS.Hardware.UART_HTTP_bribge
         static SmallTcpService tcpService;
         static SmallHttpServer httpServer;
         static List<SerialConfig> ComPortConfigs;
-        static string ServerId;
+        static ServerInfo serverInfo;
         static Dictionary<string, SerialManager> Serials = new Dictionary<string, SerialManager>();
         static string SocketMsg = "{\"type\":\"{0}\", \"data\":{1} }";
+        static Timer CallbackHeartBeatTimer;
         static void Main(string[] args)
         {
             Console.BufferHeight = 10000;
             Console.BufferWidth = 160;
             Console.WindowWidth = 160;
             Console.WindowHeight = 60;
-            var settings = ConfigurationManager.AppSettings;
-            var httpPort = Convert.ToInt32(settings["HTTP_PORT"]);
-            var wsPort = Convert.ToInt32(settings["WS_PORT"]);
-            var callbacks = settings["CALLBACK_CLIENTS"];
-            ServerId = settings["ServerId"];
-            var comPortsConfig = JsonConvert.DeserializeObject<List<string>>(settings["COM_PORTS"]);
-
-            var callbackClients = callbacks.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
 
 
+            var reader = new StreamReader("Config.js");
+            var cfgFile = reader.ReadToEnd();
+            reader.Close();
+
+            serverInfo = JsonConvert.DeserializeObject<ServerInfo>(cfgFile);
+            serverInfo.Started = DateTime.Now;
+
+            var callbackClients = serverInfo.CallbackClients;
+            
             ComPortConfigs = new List<SerialConfig>();
-
-            foreach (var serial in comPortsConfig)
+            
+            foreach (var cfg in serverInfo.Configs)
             {
-                var cfg = SerialConfig.Parse(serial);
                 if (AddPort(cfg))
                 {
                     ComPortConfigs.Add(cfg);
                 }
             }
 
-            Log("HTTP: " + httpPort);
-            httpServer = new SmallHttpServer(httpPort);
+            Log("HTTP: " + serverInfo.HttpInterface);
+            httpServer = new SmallHttpServer(serverInfo.HttpPort);
             httpServer.OnConnect += httpServer_OnConnect;
             httpServer.OnData += httpServer_OnData;
             httpServer.Start();
 
-            Log("WEB-SOCKET: " + wsPort);
+            Log("WEB-SOCKET: " + serverInfo.SocketInterface);
             socketServer = new WebSocketServer();
-            socketServer.Setup(wsPort);
+            socketServer.Setup(serverInfo.SocketPort);
             socketServer.NewMessageReceived += socketServer_NewMessageReceived;
             socketServer.SessionClosed += socketServer_SessionClosed;
             socketServer.NewSessionConnected += socketServer_NewSessionConnected;
@@ -81,7 +182,10 @@ namespace MRS.Hardware.UART_HTTP_bribge
             tcpService = new SmallTcpService();
             tcpService.OnData += tcpService_OnData;
             tcpService.OnClientState += tcpService_OnClientState;
-            tcpService.Start(callbackClients);
+            tcpService.Start(callbackClients.ToArray());
+
+            //CallbackHeartBeatTimer = new Timer(
+
 
             Thread.CurrentThread.Join();
 
@@ -93,9 +197,9 @@ namespace MRS.Hardware.UART_HTTP_bribge
 
         protected static string GetServerInfo()
         {
-            var ports = String.Join(",", SerialManager.GetPorts());
-            var cfg = JsonConvert.SerializeObject(ComPortConfigs);
-            return "{\"ServerId\": \"" + ServerId + "\",\"Serials\": \"" + ports + "\", \"Configs\":" + cfg + "}";
+            serverInfo.Serials = SerialManager.GetPorts().ToList();
+            var cfg = JsonConvert.SerializeObject(serverInfo);
+            return cfg;
         }
 
         protected static bool AddPort(SerialConfig cfg)
@@ -116,44 +220,43 @@ namespace MRS.Hardware.UART_HTTP_bribge
                 case PacketType.SimpleCRC: throw new NotImplementedException("PacketType.SimpleCRC have no manager today!");
                 case PacketType.Sized:
                     sm = new SerialPacketManager(cfg);
-                    sm.OnReceive += serial_OnReceive;
                     break;
                 case PacketType.SizedOld:
                     sm = new SerialPacketManager(cfg);
-                    sm.OnReceive += serial_OnReceive;
                     break;
                 case PacketType.Addressed:
                     sm = new SerialAddressedManager(cfg);
                     (sm as SerialAddressedManager).DeviceAddr = 0xAA;
-                    (sm as SerialAddressedManager).OnReceive += serial_OnReceive;
                     break;
                 case PacketType.AddressedOld:
                     sm = new SerialAddressedManager(cfg);
-                    (sm as SerialAddressedManager).DeviceAddr = 0xAA;
-                    (sm as SerialAddressedManager).OnReceive += serial_OnReceive;
                     break;
                 case PacketType.XRouting:
                     sm = new XRoutingManager(cfg);
                     (sm as XRoutingManager).DeviceAddr = 0xAB;
-                    (sm as XRoutingManager).OnReceiveXPacket += serial_OnReceiveXRouting;
                     break;
                 default:
                     sm = new SerialManager(cfg);
-                    sm.OnReceive += serial_OnReceive;
                     break;
             }
             Log(cfg);
+            sm.OnReceive += serial_OnReceive;
+            sm.OnSend += sm_OnSend;
+            sm.OnError += serial_OnError;
+            sm.OnStateChange += serial_OnStateChange;
             if (!sm.Connect())
             {
                 Warn("Can't connect " + cfg.PortName);
+                sm.OnReceive -= serial_OnReceive;
+                sm.OnSend -= sm_OnSend;
+                sm.OnError -= serial_OnError;
+                sm.OnStateChange -= serial_OnStateChange;
                 return false;
             }
-            sm.OnStateChange += serial_OnStateChange;
-            sm.OnError += serial_OnError;
             Serials.Add(cfg.PortName, sm);
             return true;
         }
-        
+
         private static void Info(string msg)
         {
             Console.ForegroundColor = ConsoleColor.Green;
@@ -189,16 +292,15 @@ namespace MRS.Hardware.UART_HTTP_bribge
 
         private static bool Send(SerialPacket packet)
         {
-            return Send(packet.PortName, packet.Data, null);
+            return Send(packet.PortName, packet.Data, null, true);
         }
-
 
         private static bool Send(SerialPacket packet, WebSocketSession session)
         {
-            return Send(packet.PortName, packet.Data, session);
+            return Send(packet.PortName, packet.Data, session, false);
         }
 
-        private static bool Send(string portName, byte[] data, WebSocketSession thisSession)
+        private static bool Send(string portName, byte[] data, WebSocketSession thisSession, bool fromTCP)
         {
             if (!Serials.ContainsKey(portName))
             {
@@ -211,15 +313,24 @@ namespace MRS.Hardware.UART_HTTP_bribge
 
                 if (serial.State >= UART.EDeviceState.PortOpen && serial.State < UART.EDeviceState.Offline)
                 {
+                    serial.PreventSendingEvent = true;
                     serial.Send(data);
+                    serial.PreventSendingEvent = false;
                     var sessions = GetSessions(serial.PortName);
-                    var segment = getMessage("to-uart-data", SerializeData(data));
-                    foreach (var session in sessions)
+                    var segment = getMessage(portName, SerialDirection.ToUART, data);
+                    if (sessions != null)
                     {
-                        if (session != thisSession)
+                        foreach (var session in sessions)
                         {
-                            session.Send(segment);
+                            if (session != thisSession)
+                            {
+                                session.Send(segment);
+                            }
                         }
+                    }
+                    if (tcpService != null && !fromTCP)
+                    {
+                        tcpService.Send(segment);
                     }
                 }
             }
@@ -231,9 +342,14 @@ namespace MRS.Hardware.UART_HTTP_bribge
             return true;
         }
 
-        protected static string getMessage(string type, string data)
+        protected static string getMessage(string portName, SerialDirection direction, string data)
         {
-            return SocketMsg.Replace("{0}", type).Replace("{1}", data);
+            return getMessage(portName, direction, Encoding.ASCII.GetBytes(data));
+        }
+
+        protected static string getMessage(string portName, SerialDirection direction, byte[] data)
+        {
+            return (new SerialPacketSerialization(portName, data, direction)).Serialize();
         }
 
         private static void socketServer_NewSessionConnected(WebSocketSession session)
@@ -251,7 +367,7 @@ namespace MRS.Hardware.UART_HTTP_bribge
             else
             {
                 Info("Sock client " + session.SessionID + " connected without path ");
-                session.Send(getMessage("config", JsonConvert.SerializeObject(ComPortConfigs)));
+                session.Send(JsonConvert.SerializeObject(ComPortConfigs));
             }
             session.Close();
         }
@@ -278,13 +394,14 @@ namespace MRS.Hardware.UART_HTTP_bribge
 
         private static IEnumerable<WebSocketSession> GetSessions(string portName)
         {
+            if (socketServer == null) return null;
             return socketServer.GetSessions(s => s.Path == portName);
         }
 
 
-//--------------------------------------------------------------------------------------------------
-//--------------------------------HTTP           --------------------------------------------------
-//--------------------------------------------------------------------------------------------------
+        //--------------------------------------------------------------------------------------------------
+        //--------------------------------HTTP           --------------------------------------------------
+        //--------------------------------------------------------------------------------------------------
 
 
         private static void httpServer_OnData(string value, HttpListenerContext context)
@@ -297,7 +414,7 @@ namespace MRS.Hardware.UART_HTTP_bribge
                 {
                     portName = portName.Replace("/", "");
                 }
-                Send(portName, JsonConvert.DeserializeObject<byte[]>(value), null);
+                Send(portName, JsonConvert.DeserializeObject<byte[]>(value), null, false);
             }
             catch (Exception e)
             {
@@ -309,7 +426,7 @@ namespace MRS.Hardware.UART_HTTP_bribge
         private static void httpServer_OnConnect(HttpListenerContext context)
         {
             var portName = context.Request.Url.AbsolutePath;
-            Info("HTTP client connected " + portName) ;
+            Info("HTTP client connected " + portName);
             if (portName != null && portName != "")
             {
                 portName = portName.Replace("/", "");
@@ -335,7 +452,7 @@ namespace MRS.Hardware.UART_HTTP_bribge
             context.Response.OutputStream.Write(dta, 0, dta.Length);
             //httpServer.Send(getMessage("config", ));
         }
-        
+
 
         //--------------------------------------------------------------------------------------------------
 
@@ -363,35 +480,13 @@ namespace MRS.Hardware.UART_HTTP_bribge
 
         static void tcpService_OnData(int clientId, byte[] data)
         {
-            var txt = Encoding.UTF8.GetString(data);
+            var item = Encoding.UTF8.GetString(data);
             try
             {
-
-                var items = JsonConvert.DeserializeObject<string[]>(txt);
-                if (items.Length == 0) return;
-                if (items[0].IndexOf('[') < 0)
+                if (item.Length > 0)
                 {
-                    var cfg = JsonConvert.DeserializeObject<SerialConfig>(items[0]);
-                    if (AddPort(cfg))
-                    {
-                        ComPortConfigs.Add(cfg);
-                    }
+                    Send(JsonConvert.DeserializeObject<SerialPacket>(item));
                 }
-                Log("TCP " + clientId + " --> " + items.Length);
-
-                foreach (var item in items)
-                {
-                    if (item.Length > 0)
-                    {
-                        var packet = JsonConvert.DeserializeObject<SerialPacket>(item);
-                        if (items.Length <= 20)
-                        {
-                            Log("          " + item);
-                        }
-                        Send(packet);
-                    }
-                }
-
             }
             catch (Exception err)
             {
@@ -402,6 +497,30 @@ namespace MRS.Hardware.UART_HTTP_bribge
         //--------------------------------------------------------------------------------------------------
 
 
+        static void sm_OnSend(byte[] data, SerialManager manager)
+        {
+            if (data.Length > 40)
+            {
+                Log(manager.PortName + " << " + data.Length);
+            }
+            else
+            {
+                var str = SerialPacket.SerializeData(data);
+                Log(manager.PortName + " << " + str);
+            }
+            var sessions = GetSessions(manager.PortName);
+            if (sessions == null) return;
+            var segment = getMessage(manager.PortName, SerialDirection.ToUART, data);
+            foreach (var session in sessions)
+            {
+                session.Send(segment);
+            }
+            if (tcpService != null)
+            {
+                tcpService.Send(segment);
+            }
+        }
+
         static void serial_OnError(Exception e, SerialManager sm)
         {
             var portName = "";
@@ -409,15 +528,19 @@ namespace MRS.Hardware.UART_HTTP_bribge
             {
                 portName = sm.PortName;
             }
+            var segment = getMessage(portName, SerialDirection.Error, e.Message);
             if (socketServer != null && socketServer.State == SuperSocket.SocketBase.ServerState.Running)
             {
                 Error(portName + " ERROR: " + e.Message);
                 var sessions = socketServer.GetAllSessions();
-                var segment = getMessage("uart-error", e.Message);
                 foreach (var session in sessions)
                 {
                     session.Send(segment);
                 }
+            }
+            if (tcpService != null)
+            {
+                tcpService.Send(segment);
             }
         }
 
@@ -450,42 +573,35 @@ namespace MRS.Hardware.UART_HTTP_bribge
             }
             if (data.Length > 40)
             {
-                Log(portName + " << " + data.Length);
+                Log(portName + " >> " + data.Length);
             }
             else
             {
-                var str = SerializeData(data);
-                Log(portName + " << " + str);
+                var str = SerialPacket.SerializeData(data);
+                Log(portName + " >> " + str);
             }
+            var segment = getMessage(portName, SerialDirection.FromUART, data);
             if (socketServer != null && socketServer.State == SuperSocket.SocketBase.ServerState.Running)
             {
                 var sessions = GetSessions(portName);
-                var segment = getMessage("from-uart-data", SerializeData(data));
-                foreach (var session in sessions)
+                if (sessions != null)
                 {
-                    session.Send(segment);
+                    foreach (var session in sessions)
+                    {
+                        session.Send(segment);
+                    }
                 }
             }
             if (tcpService != null)
             {
-                tcpService.Send(JsonConvert.SerializeObject(new SerialPacket() { PortName = portName, Data = data }));
+                tcpService.Send(segment);
             }
         }
-        
+        /*
         private static void serial_OnReceiveXRouting(XPacket packet, XRoutingManager manager)
         {
             serial_OnReceive(packet.ToBytes(), manager);
         }
-
-        public static string SerializeData(byte[] dta)
-        {
-            var str = "[";
-            for (var i=0; i < dta.Length; i++)
-            {
-                str += dta[i] + ",";
-            }
-            str = str.TrimEnd(',') + "]";
-            return str;
-        }
+        */
     }
 }

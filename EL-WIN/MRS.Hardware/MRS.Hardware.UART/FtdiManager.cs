@@ -5,106 +5,146 @@ using System.Linq;
 using System.Text;
 using System.IO.Ports;
 using System.Threading;
-using FTD2XX_NET;
+using FTDIDriver = FTD2XX_NET.FTDI;
 
 namespace MRS.Hardware.UART
 {
-    public static class Device
+    public class FtdiManager : SerialManager
     {
-        private static EDeviceState _state = EDeviceState.Unknown;
+        private FTDIDriver device = new FTDIDriver();
 
-        public static string PortName;
+        private BackgroundWorker worker;
 
-        public static EDeviceState State
+        public List<string> Errors = new List<string>();
+
+        public string LastError
         {
             get
             {
-                return _state;
-            }
-            private set
-            {
-                if (value != _state)
+                if (Errors.Count > 0)
                 {
-                    _state = value;
-                    if (OnStateChange != null)
-                    {
-                        OnStateChange(value);
-                    }
+                    return Errors.Last();
                 }
+                return "";
             }
         }
 
-        public static List<string> Errors = new List<string>();
 
-        public static event OnReceiveHandler OnReceive;
+        public void Error(string message, FTDIDriver.FT_STATUS status)
+        {
+            callError(new Exception(message + " status: " + status));
+        }
 
-        public static event OnReceiveByteHandler OnReceiveByte;
 
-        public static event OnStateChangeHandler OnStateChange;
+        public FtdiManager()
+        {
 
-        private static Timer StateTimer;
+        }
 
-        public static UARTReadingState readState { get; private set; }
+        public FtdiManager(uint index)
+        {
+            device = new FTDIDriver();
+            FTDIDriver.FT_STATUS ftStatus = device.OpenByIndex(index);
+            CheckError("Failed to open device 0", ftStatus);
+            if (!device.IsOpen)
+            {
+                Error("Failed to open device. Device not opened!", ftStatus);
+            }
+        }
 
-        public static UARTWritingState writeState { get; private set; }
-
-        private static FTDI device = new FTDI();
-
-        private static BackgroundWorker worker;
-
-        private static void log(string error)
+        public bool CheckError(string message, FTDIDriver.FT_STATUS status)
+        {
+            if (status != FTDIDriver.FT_STATUS.FT_OK)
+            {
+               // Error(message, status);
+                return true;
+            }
+            return false;
+        }
+        private void log(string error)
         {
             Errors.Add(error);
         }
 
-        private static void log(FTDI.FT_STATUS status, string func, string error)
+        private void log(FTDIDriver.FT_STATUS status, string func, string error)
         {
             Errors.Add(func + status.ToString() + error);
         }
 
-        private static void log(FTDI.FT_STATUS status, string error)
+        private void log(FTDIDriver.FT_STATUS status, string error)
         {
             Errors.Add(string.Format(error, status.ToString()));
         }
 
-        private static void error(FTDI.FT_STATUS status, string error)
+        private void error(FTDIDriver.FT_STATUS status, string error)
         {
             error = string.Format(error, status.ToString());
             Errors.Add(error);
             throw new Exception(error);
         }
 
-        public static FTDI.FT_DEVICE_INFO_NODE[] GetDevicesList()
+        public static FTDIDriver.FT_DEVICE_INFO_NODE[] GetDevicesList()
         {
+            var device = new FTDIDriver();
             uint devCount = 0;
             var status = device.GetNumberOfDevices(ref devCount);
-            if (status != FTDI.FT_STATUS.FT_OK)
+            if (status != FTDIDriver.FT_STATUS.FT_OK)
             {
                 return null;
             }
-            FTDI.FT_DEVICE_INFO_NODE[] devices = new FTDI.FT_DEVICE_INFO_NODE[devCount];
+            FTDIDriver.FT_DEVICE_INFO_NODE[] devices = new FTDIDriver.FT_DEVICE_INFO_NODE[devCount];
             status = device.GetDeviceList(devices);
-            if (status == FTDI.FT_STATUS.FT_OK)
+            if (status == FTDIDriver.FT_STATUS.FT_OK)
             {
                 return devices;
             }
             return null;
         }
 
-        public static bool Init(uint speed, uint timeout)
+
+        public static string GetDeviceInfo()
         {
-            var devs = GetDevicesList();
-            foreach (var ftDeviceInfoNode in devs)
+            FTDIDriver chip = new FTDIDriver();
+            string info = "";
+            uint deviceCount = 0;
+            FTDIDriver.FT_STATUS status = chip.GetNumberOfDevices(ref deviceCount);
+            if (status != FTDIDriver.FT_STATUS.FT_OK)
             {
-                if (ftDeviceInfoNode.Type == FTDI.FT_DEVICE.FT_DEVICE_232R)
-                {
-                    return Init(ftDeviceInfoNode.SerialNumber, speed, timeout);
-                }
+                info = "GetDeviceInfo: Device Error! " + status;
+                return info;
             }
-            return false;
+            if (deviceCount > 0)
+            {
+                // Allocate storage for device info list
+                FTDIDriver.FT_DEVICE_INFO_NODE[] ftdiDeviceList = new FTDIDriver.FT_DEVICE_INFO_NODE[deviceCount];
+
+                // Populate our device list
+                status = chip.GetDeviceList(ftdiDeviceList);
+                if (status != FTDIDriver.FT_STATUS.FT_OK)
+                {
+                    info = "GetDeviceInfo: Error getting list!" + status;
+                    return info;
+                }
+                for (int i = 0; i < deviceCount; i++)
+                {
+                    info += "Device: " + ftdiDeviceList[i].ID + "\n";
+                    info += "Type: " + ftdiDeviceList[i].Type + "\n";
+                    info += "SerialNumber: " + ftdiDeviceList[i].SerialNumber + "\n";
+                    info += "Description: " + ftdiDeviceList[i].Description + "\n";
+                    info += "\n";
+                }
+                return info;
+            }
+            return "";
         }
 
-        public static bool Init(string serial, uint speed, uint timeout)
+
+        /*
+        public FtdiManager(uint speed, uint timeout) : this(ftDeviceInfoNode.SerialNumber, speed, 1000)
+        {
+        }
+
+        public FtdiManager(string serial, uint speed, uint timeout)
         {
             if (device.IsOpen)
             {
@@ -113,7 +153,7 @@ namespace MRS.Hardware.UART
                 State = EDeviceState.Unknown;
             }
             var status = device.OpenBySerialNumber(serial);
-            if (status == FTDI.FT_STATUS.FT_OK)
+            if (status == FTDIDriver.FT_STATUS.FT_OK)
             {
                 _state = EDeviceState.PortOpen;
             }
@@ -122,7 +162,7 @@ namespace MRS.Hardware.UART
                 error(status, "Init device with SN: " + serial + " error {0}");
             }
             status = device.GetCOMPort(out PortName);
-            if (status != FTDI.FT_STATUS.FT_OK || PortName == "")
+            if (status != FTDIDriver.FT_STATUS.FT_OK || PortName == "")
             {
                 error(status, "Init device with SN: " + serial + " No Port Specified {0}");
             }
@@ -143,13 +183,12 @@ namespace MRS.Hardware.UART
             }
             device.SetTimeouts(timeout, timeout);
             device.SetBaudRate(speed);
-            device.SetDataCharacteristics(8, 1, FTDI.FT_PARITY.FT_PARITY_ODD);
+            device.SetDataCharacteristics(8, 1, FTDIDriver.FT_PARITY.FT_PARITY_ODD);
             // port.DataReceived += new SerialDataReceivedEventHandler(port_DataReceived);
             worker.RunWorkerAsync();
-            return true;
         }
 
-        static void worker_DoWork(object sender, DoWorkEventArgs e)
+        void worker_DoWork(object sender, DoWorkEventArgs e)
         {
             var worker = (BackgroundWorker)sender;
             byte[] receivedBuf = null;
@@ -159,7 +198,7 @@ namespace MRS.Hardware.UART
             {
                 uint bytesRead = 0;
                 var status = device.GetRxBytesAvailable(ref bytesRead);
-                if (status != FTDI.FT_STATUS.FT_OK)
+                if (status != FTDIDriver.FT_STATUS.FT_OK)
                 {
                     log(status, "GetRxBytesAvailable: {0}");
                     break;
@@ -173,7 +212,7 @@ namespace MRS.Hardware.UART
                 {
                     byte b = 0;
                     status = device.Read(buf, 1, ref bytesRead);
-                    if (status != FTDI.FT_STATUS.FT_OK)
+                    if (status != FTDIDriver.FT_STATUS.FT_OK)
                     {
                         log(status, "Read: {0}");
                         break;
@@ -228,8 +267,8 @@ namespace MRS.Hardware.UART
                 }
             }
         }
-
-        public static EDeviceState GetState()
+        */
+        public EDeviceState GetState()
         {
             if (writeState > UARTWritingState.free || readState > UARTReadingState.free)
             {
@@ -240,13 +279,13 @@ namespace MRS.Hardware.UART
             {
                 if (device.IsOpen)
                 {
-                    FTDI.FT_DEVICE dev = FTDI.FT_DEVICE.FT_DEVICE_UNKNOWN;
-                    if (device.GetDeviceType(ref dev) != FTDI.FT_STATUS.FT_OK)
+                    FTDIDriver.FT_DEVICE dev = FTDIDriver.FT_DEVICE.FT_DEVICE_UNKNOWN;
+                    if (device.GetDeviceType(ref dev) != FTDIDriver.FT_STATUS.FT_OK)
                     {
                         State = EDeviceState.Unknown;
                         return State;
                     }
-                    if (dev == FTDI.FT_DEVICE.FT_DEVICE_UNKNOWN)
+                    if (dev == FTDIDriver.FT_DEVICE.FT_DEVICE_UNKNOWN)
                     {
                         State = EDeviceState.Error;
                     }
@@ -267,17 +306,25 @@ namespace MRS.Hardware.UART
             return State;
         }
 
-        public static void Close()
+        public void ResetChip(){
+            device.ResetPort();
+            device.ResetDevice();
+            device.Rescan();
+        }
+
+
+        public void Close()
         {
             if (worker != null && !worker.CancellationPending)
             {
                 worker.CancelAsync();
-            }
+            }/*
             if (StateTimer != null)
             {
                 StateTimer.Dispose();
                 StateTimer = null;
-            }
+            
+              }*/
             if (device.IsOpen)
             {
                 device.Close();
@@ -285,45 +332,44 @@ namespace MRS.Hardware.UART
             }
         }
 
-        public static bool Send(byte[] buffer)
+
+        public virtual byte ReadByte()
         {
-            if (writeState > UARTWritingState.free) return false;
-            if (buffer.Length > 255 || buffer.Length == 0) return false;
-            if (!device.IsOpen)
+            byte[] buffer = new byte[1];
+            UInt32 numBytesReader = 0;
+            FTDIDriver.FT_STATUS ftStatus = device.Read(buffer, 1, ref numBytesReader);
+            if (!CheckError("Failed to read from device", ftStatus))
             {
-                return false;
+                //callReceiveByte(buffer[0]);
             }
-            writeState = UARTWritingState.writing;
-            var buf = new byte[buffer.Length + 4];
-            byte crc = 255;
-            buf[0] = 0;
-            buf[1] = (byte)buffer.Length;
-            buffer.CopyTo(buf, 2);
-            for (int i = 0; i < buffer.Length; i++)
-            {
-                crc ^= buffer[i];
-            }
-            buf[buf.Length - 2] = crc;
-            buf[buf.Length - 1] = (byte)ASCII.EOT;
-            uint bwrite = 0;
-            var status = device.Write(buf, buf.Length, ref bwrite);
-            if (status != FTDI.FT_STATUS.FT_OK)
-            {
-                log(status, "Write: {0}");
-                return false;
-            }
-            writeState = UARTWritingState.free;
-            return true;
+            return buffer[0];
         }
 
-        public static void Send(byte command)
+        public virtual byte[] ReadData(uint bytesCount)
         {
-            Send(new byte[] { command });
+            byte[] buffer = new byte[bytesCount];
+            UInt32 numBytesReader = 0;
+            FTDIDriver.FT_STATUS ftStatus = device.Read(buffer, bytesCount, ref numBytesReader);
+            if (!CheckError("Failed to read from device", ftStatus))
+            {
+                //callReceive(buffer);
+            }
+            return buffer;
         }
 
-        public static void Send(string str)
+        public virtual string ReadString(uint bytesCount)
         {
-            Send(ASCIIEncoding.ASCII.GetBytes(str));
+            string buffer = "";
+            UInt32 numBytesReader = 0;
+            FTDIDriver.FT_STATUS ftStatus = device.Read(out buffer, bytesCount, ref numBytesReader);
+            if (!CheckError("Failed to read from device", ftStatus))
+            {
+               /* if (OnReceive != null)
+                {
+                    OnReceive(buffer);
+                }*/
+            }
+            return buffer;
         }
     }
 }
