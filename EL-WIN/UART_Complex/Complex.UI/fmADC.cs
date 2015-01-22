@@ -39,13 +39,13 @@ namespace MRS.Hardware.UI.Analyzer
         
         private void Stop()
         {
-            manager.Send(0);
+            manager.Send(40);
             Started = false;
         }
 
         private void Start()
         {
-            manager.Send(2);
+            manager.Send(42);
             Started = true;
         }
         

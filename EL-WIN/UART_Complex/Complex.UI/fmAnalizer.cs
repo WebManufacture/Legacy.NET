@@ -38,7 +38,7 @@ namespace MRS.Hardware.UI.Analyzer
         protected override void OnClosed(EventArgs e)
         {
             tmReader.Enabled = false;
-            manager.Send(0);
+            manager.Send(40);
             base.OnClosed(e);
         }
 
@@ -46,7 +46,7 @@ namespace MRS.Hardware.UI.Analyzer
         {
             counter = 0;
             tmReader.Enabled = true;
-            manager.Send(1);
+            manager.Send(41);
         }
 
         private void tmReader_Tick(object sender, EventArgs e)
@@ -56,7 +56,7 @@ namespace MRS.Hardware.UI.Analyzer
             if (manager.HasData())
             {
                 var bytes = manager.ReadData();
-                if (bytes.Length > 0)
+                if (bytes != null && bytes.Length > 0)
                 {
                     var offset = 0;
                     if (bytes.Length / data.Length > 1)
@@ -133,11 +133,11 @@ namespace MRS.Hardware.UI.Analyzer
                     var val = data[i] & (1 << line);
                     if (val > 0)
                     {
-                        graph.FillRectangle(colors[line], i, center - 14, 1, 3);
+                        graph.FillRectangle(colors[line], i, center - 14, 1, 14);
                     }
                     else
                     {
-                        graph.FillRectangle(colors[line], i, center, 1, 10);
+                        graph.FillRectangle(colors[line], i, center, 1, 1);
                     }
                 }                
             } 
