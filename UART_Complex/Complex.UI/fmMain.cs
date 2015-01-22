@@ -22,25 +22,29 @@ namespace MRS.Hardware.UI.Analyzer
         SerialManager device = null;
         static List<SerialConfig> ComPortConfigs;
 
+        public OnStateChangeHandler DeviceStateChanged;
+
         public void ShowMessage(string message)
         {
-            txtConsole.Text += message;
-            txtConsole.Text += "\n-----------------------------------\n";
+            if (txtConsole.Text.Length > 100000) txtConsole.Text = txtConsole.Text.Remove(10000);
+            txtConsole.Text = message + "\n-----------------------------------\n" + txtConsole.Text;
         }
 
-        public void ShowError(string message, Exception err)
+        public void ShowError(string msg, Exception err)
         {
-            txtConsole.Text += message + "\n";
-            txtConsole.Text += err.Message + "\n";
-            txtConsole.Text += err.Source + "\n";
-            txtConsole.Text += err.StackTrace + "\n";
-            txtConsole.Text += "\n-----------------------------------\n";
+            var message = "";
+            message += msg + "\n";
+            message += err.Message + "\n";
+            message += err.Source + "\n";
+            message += err.StackTrace + "\n";
+            if (txtConsole.Text.Length > 100000) txtConsole.Text = txtConsole.Text.Remove(10000);
+            txtConsole.Text = message + "\n-----------------------------------\n" + txtConsole.Text;
         }
 
         public void ShowError(string message)
         {
-            txtConsole.Text += message;
-            txtConsole.Text += "\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n";
+            if (txtConsole.Text.Length > 100000) txtConsole.Text = txtConsole.Text.Remove(10000);
+            txtConsole.Text = message + "\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n" + txtConsole.Text;
         }
 
         public void FillDevicesList()
@@ -112,6 +116,7 @@ namespace MRS.Hardware.UI.Analyzer
                 ComPortConfigs.Add(SerialConfig.Parse(cfg));
             }
             FillStoredDevices();
+            DeviceStateChanged += OnDeviceStatusChanged;
         }
 
         private void Close_Click(object sender, EventArgs e)
@@ -193,14 +198,19 @@ namespace MRS.Hardware.UI.Analyzer
 
         }
 
-        void SelectedPort_Disposed(EDeviceState state, SerialManager sm)
+        void OnDeviceStatusChanged(EDeviceState state, SerialManager sm)
         {
-            ShowMessage(sm.PortName + " -->  " + state);
+            ShowMessage(device.PortName + " -->  " + state);
             if (state == EDeviceState.Offline)
             {
                 DisableItems();
                 device = null;
             }
+        }
+
+        void SelectedPort_Disposed(EDeviceState state, SerialManager sm)
+        {
+            Invoke(DeviceStateChanged, state, sm);
         }
 
         private void boxConnect_Click(object sender, EventArgs e)
