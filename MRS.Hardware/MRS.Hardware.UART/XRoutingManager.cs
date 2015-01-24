@@ -257,6 +257,15 @@ namespace MRS.Hardware.UART
                     KnownDevices.Add(device);
                 }
                 LastDeviceAddr = device.Addr;
+                
+                /*
+                #dstAddr  00
+                #dstType  02
+                #srcAddr  254
+                #srcType  A6
+                FactoryNum
+                */
+
                 Send(new XPacket() { 
                     Data = packet.Data, 
                     SourceAddr = DeviceAddr, 
@@ -285,6 +294,15 @@ namespace MRS.Hardware.UART
                         }
                         device.Addr = addr;
                     }
+
+                    /*
+                      #dstAddr  3F
+                      #dstType  04
+                      #srcAddr  23
+                      #srcType  00
+                      FactoryNum
+                    */
+
                     Send(new XPacket()
                     {
                         Data = packet.Data,
@@ -315,6 +333,14 @@ namespace MRS.Hardware.UART
 
         public void SendLookPacket()
         {
+            /*
+              #dstAddr  00
+              #dstType  05
+              #srcAddr  3F
+              #srcType  00
+              FactoryNum
+            */
+
             Send(new XPacket()
                {
                    Data = FactoryRec,
