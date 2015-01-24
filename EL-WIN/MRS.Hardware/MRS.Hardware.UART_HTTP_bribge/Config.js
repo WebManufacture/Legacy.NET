@@ -27,7 +27,7 @@
     },
     {
         "DeviceName": "RoboAnalyzer",
-        "PortName": "COM2",
+        "PortName": "COM14",
         "Speed": 921600,
         "DataBits": 8,
         "Parity": 0,

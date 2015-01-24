@@ -5,6 +5,36 @@ using System.Text;
 
 namespace MRS.Hardware.UART
 {
+    public enum PacketType : byte
+    {
+        Raw = 0,
+        Simple = 1,      //UNSIZED               #02 ... data ... #03
+        SimpleCoded = 2, //UNSIZED               coded by 2bytes ($3D = #F3 #FD) data      #02 ... coded data ... #03
+        SimpleCRC = 3,   //UNSIZED               WITH CRC  #02 ... data ... #crc #03
+        PacketInvariant = 5,// CAN BE 2, 3, 10, 11, 14, 15
+        Sized = 10,      //SIZED  #01 #size #02? ... data ... #03
+        SizedOld = 11,   //SIZED  #01 #size #02? ... data ... #04
+        SizedCRC = 14,   //SIZED  #01 #size #02? ... data ... #CRC #03
+        SizedCRC_old = 15,   //SIZED  #01 #size ... data ... #CRC #04
+        Addressed = 20,  //With addr  #01 #size #addr ... data ... #03
+        AddressedOld = 21,  //With addr  #01 #size #addr ... data ... #04
+        XRouting = 30,    //XRouting addressed  #01 #size #dstAddr #dstType #srcAddr #srcType ... data ... #crc #03
+        LIN = 32    //XRouting addressed  #01 #size #02 #dstAddr #dstType #srcAddr #srcType ... data ... #crc #03
+    }
+
+/*
+    #01 
+    #size 
+    #02
+    #dstAddr 
+    #dstType 
+    #srcAddr 
+    #srcType 
+    ... data ... 
+    #crc 
+    #03
+    
+  */  
     public enum UartCommand : byte
     {
         UNKNOWN = 0x00, //Data
