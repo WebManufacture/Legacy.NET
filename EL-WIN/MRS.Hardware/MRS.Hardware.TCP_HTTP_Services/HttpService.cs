@@ -18,7 +18,7 @@ namespace MRS.Hardware.CommunicationsServices
     }
 
     public delegate void OnHttpDataHandler(string data, HttpListenerContext context);
-    public delegate void OnHttpConnectHandler(HttpListenerContext context);
+    public delegate bool OnHttpConnectHandler(HttpListenerContext context);
     public delegate void OnHttpServerStateHandler(HttpServerState state);
 
     public class HardwareHttpServer
