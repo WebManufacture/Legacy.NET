@@ -30,13 +30,13 @@ namespace MRS.Hardware.CommunicationsServices
                 return port;
             }
         }
-        
+
         public SmallHttpServer(int port)
         {
             this.port = port;
             Connected = false;
             Messages = new Queue<string>();
-            listener = new HttpListener();
+            listener = new HttpListener(); 
             listener.Prefixes.Add("http://+:" + this.port + "/");
             listener.AuthenticationSchemes = AuthenticationSchemes.Anonymous;
             worker = new BackgroundWorker();
@@ -82,36 +82,43 @@ namespace MRS.Hardware.CommunicationsServices
         public void AcceptClient(HttpListenerContext context)
         {
             Connected = true;
-            context.Response.AddHeader("Access-Control-Allow-Methods", "POST,GET,OPTIONS");
-            context.Response.AddHeader("Access-Control-Request-Header", "X-Prototype-Version, x-requested-with");
-            context.Response.AddHeader("Access-Control-Allow-Origin", "*");
-            context.Response.ContentType = "text/json";
-            context.Response.StatusCode = 200;
-            context.Response.ContentEncoding = Encoding.UTF8;
-            context.Response.SendChunked = false;
-            context.Response.KeepAlive = false;
-            if (OnConnect != null)
+            try
             {
-                OnConnect(context);
-            }
-            if (context.Request.HttpMethod == "GET")
-            {
-                SendData(context);
-                context.Response.OutputStream.Flush();
-                context.Response.StatusCode = 200;
+                //context.Response.SendChunked = false;
+                context.Response.KeepAlive = false;
+                context.Response.ContentEncoding = Encoding.UTF8;
+                context.Response.AddHeader("Access-Control-Allow-Methods", "POST,GET,OPTIONS");
+                context.Response.AddHeader("Access-Control-Request-Header", "X-Prototype-Version, x-requested-with");
+                context.Response.AddHeader("Access-Control-Allow-Origin", "*");
+                context.Response.AddHeader("Content-Type", "text/json");
+                if (OnConnect != null)
+                {
+                    if (OnConnect(context)) return;
+                }
+                if (context.Request.HttpMethod == "GET")
+                {
+                    SendData(context);
+                    context.Response.Close();
+                    return;
+                }
+                if (context.Request.HttpMethod == "POST")
+                {
+                    ReceiveData(context);
+                    context.Response.Close();
+                    return;
+                }
+                context.Response.StatusCode = 401;
                 context.Response.Close();
-                return;
             }
-            if (context.Request.HttpMethod == "POST")
+            catch (Exception err)
             {
-                ReceiveData(context);
-                context.Response.OutputStream.Flush();
-                context.Response.StatusCode = 200;
+                context.Response.StatusCode = 500;
+                context.Response.ContentType = "text/plain";
+                var msg = Encoding.UTF8.GetBytes("" + err.Message + "");
+                context.Response.ContentLength64 = msg.Length;
+                context.Response.OutputStream.Write(msg, 0, msg.Length);
                 context.Response.Close();
-                return;
             }
-            context.Response.StatusCode = 401;
-            context.Response.Close();
         }
 
         public void Send(string data)
@@ -133,10 +140,11 @@ namespace MRS.Hardware.CommunicationsServices
             {
                 context.Response.OutputStream.WriteByte(CharToByte('['));
                 string item;
-                while((item = Messages.Dequeue()) != null){
+                while ((item = Messages.Dequeue()) != null)
+                {
                     var data = Encoding.UTF8.GetBytes(item);
                     context.Response.OutputStream.Write(data, 0, data.Length);
-                    if (Messages.Count > 0) 
+                    if (Messages.Count > 0)
                         context.Response.OutputStream.WriteByte(CharToByte(','));
                 }
                 context.Response.OutputStream.WriteByte(CharToByte(']'));
@@ -162,6 +170,6 @@ namespace MRS.Hardware.CommunicationsServices
             listener.Close();
         }
 
-        
+
     }
 }

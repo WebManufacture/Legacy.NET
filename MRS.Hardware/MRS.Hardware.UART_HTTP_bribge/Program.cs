@@ -129,7 +129,7 @@ namespace MRS.Hardware.UART_HTTP_bribge
         static Dictionary<string, SerialManager> Serials = new Dictionary<string, SerialManager>();
         static string SocketMsg = "{\"type\":\"{0}\", \"data\":{1} }";
         static Timer CallbackHeartBeatTimer;
-        static void Main(string[] args)
+        static int Main(string[] args)
         {
             Console.BufferHeight = 10000;
             Console.BufferWidth = 160;
@@ -188,12 +188,22 @@ namespace MRS.Hardware.UART_HTTP_bribge
 
 
             Thread.CurrentThread.Join();
+                        
+            foreach (var serial in Serials)
+            {
+                if (serial.Value != null)
+                {
+                    serial.Value.Close();
+                }
+            }
 
             httpServer.Close();
             socketServer.Stop();
             tcpService.Close();
 
+            return 0;
         }
+
 
         protected static string GetServerInfo()
         {
@@ -354,7 +364,7 @@ namespace MRS.Hardware.UART_HTTP_bribge
 
         private static void socketServer_NewSessionConnected(WebSocketSession session)
         {
-            var portName = session.Path;
+            var portName = session.Path.Replace("/", "");
             if (portName != null && portName != "")
             {
                 portName = portName.Replace("/", "");
@@ -362,6 +372,11 @@ namespace MRS.Hardware.UART_HTTP_bribge
                 if (Serials.ContainsKey(portName))
                 {
                     session.Path = portName;
+                    return;
+                }
+                else
+                {
+                    session.Send("port not open!");
                 }
             }
             else
@@ -423,7 +438,7 @@ namespace MRS.Hardware.UART_HTTP_bribge
         }
 
 
-        private static void httpServer_OnConnect(HttpListenerContext context)
+        private static bool httpServer_OnConnect(HttpListenerContext context)
         {
             var portName = context.Request.Url.AbsolutePath;
             Info("HTTP client connected " + portName);
@@ -435,10 +450,11 @@ namespace MRS.Hardware.UART_HTTP_bribge
             {
                 var info = Encoding.UTF8.GetBytes(GetServerInfo());
                 context.Response.OutputStream.Write(info, 0, info.Length);
-                return;
+                context.Response.Close();
+                return true;
             }
             var cfg = ComPortConfigs.FirstOrDefault(s => s.PortName == portName);
-            if (cfg == null)
+            if (cfg != null)
             {
                 cfg = new SerialConfig();
                 cfg.PortName = portName;
@@ -448,9 +464,10 @@ namespace MRS.Hardware.UART_HTTP_bribge
                     ComPortConfigs.Add(cfg);
                 }
             }
-            var dta = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(cfg));
+            var dta = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(serverInfo));
             context.Response.OutputStream.Write(dta, 0, dta.Length);
-            //httpServer.Send(getMessage("config", ));
+            context.Response.Close();
+            return true;
         }
 
 
