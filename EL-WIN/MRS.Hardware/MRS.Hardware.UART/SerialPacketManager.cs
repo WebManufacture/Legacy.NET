@@ -45,11 +45,13 @@ namespace MRS.Hardware.UART
         }
 
         public SerialPacketManager(SerialPort port) : base(port) {
-           
+            receiverStart = PACKET_SIZED_START_BYTE;
+            receiverEnd = PACKET_END_TEXT;
         }
 
         public SerialPacketManager(SerialPort port, SerialConfig config) : this(port)
         {
+            receiverStart = PACKET_SIZED_START_BYTE;
             if (config.RxPacketType == PacketType.SimpleCRC || config.RxPacketType == PacketType.SizedCRC || config.RxPacketType == PacketType.SizedCRC_old)
             {
                 receiverCRCValue = config.ReceiverCRC;
@@ -80,6 +82,7 @@ namespace MRS.Hardware.UART
 
         public SerialPacketManager(SerialConfig config) : base(config)
         {
+            receiverStart = PACKET_SIZED_START_BYTE;
             if (config.RxPacketType == PacketType.SimpleCRC || config.RxPacketType == PacketType.SizedCRC || config.RxPacketType == PacketType.SizedCRC_old)
             {
                 receiverCRCValue = config.ReceiverCRC;
@@ -109,22 +112,33 @@ namespace MRS.Hardware.UART
         }
 
         public SerialPacketManager(string portName) : base(portName) {
-           
+            receiverStart = PACKET_SIZED_START_BYTE;
+            receiverEnd = PACKET_END_TEXT;           
         }
 
         public SerialPacketManager(string portName, int speed) : base(portName, speed) {
-            
+            receiverStart = PACKET_SIZED_START_BYTE;
+            receiverEnd = PACKET_END_TEXT;            
         }
 
         public SerialPacketManager(string portName, int speed, int timeout) : base(portName, speed, timeout) {
-            
+            receiverStart = PACKET_SIZED_START_BYTE;
+            receiverEnd = PACKET_END_TEXT;
         }
 
         public SerialPacketManager(string portName, int speed, Parity parity, byte dataBits, StopBits stops, int timeout)
             : base(portName, speed, parity, dataBits, stops, timeout) {
+                receiverStart = PACKET_SIZED_START_BYTE;
+                receiverEnd = PACKET_END_TEXT;
         }
 
         protected PacketReadingState packetState = PacketReadingState.free;
+
+        public PacketReadingState PacketState
+        {
+            get { return packetState; }
+        }
+
         private byte[] receivingBuf;
         private int readingIndex;
         private byte crc;

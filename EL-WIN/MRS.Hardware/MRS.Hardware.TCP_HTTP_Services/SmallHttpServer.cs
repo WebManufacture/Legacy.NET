@@ -36,7 +36,7 @@ namespace MRS.Hardware.CommunicationsServices
             this.port = port;
             Connected = false;
             Messages = new Queue<string>();
-            listener = new HttpListener(); 
+            listener = new HttpListener();
             listener.Prefixes.Add("http://+:" + this.port + "/");
             listener.AuthenticationSchemes = AuthenticationSchemes.Anonymous;
             worker = new BackgroundWorker();
@@ -136,19 +136,16 @@ namespace MRS.Hardware.CommunicationsServices
 
         private void SendData(HttpListenerContext context)
         {
-            if (Messages.Count > 0)
+            context.Response.OutputStream.WriteByte(CharToByte('['));
+            string item;
+            while (Messages.Count > 0 && (item = Messages.Dequeue()) != null)
             {
-                context.Response.OutputStream.WriteByte(CharToByte('['));
-                string item;
-                while ((item = Messages.Dequeue()) != null)
-                {
-                    var data = Encoding.UTF8.GetBytes(item);
-                    context.Response.OutputStream.Write(data, 0, data.Length);
-                    if (Messages.Count > 0)
-                        context.Response.OutputStream.WriteByte(CharToByte(','));
-                }
-                context.Response.OutputStream.WriteByte(CharToByte(']'));
+                var data = Encoding.UTF8.GetBytes(item);
+                context.Response.OutputStream.Write(data, 0, data.Length);
+                if (Messages.Count > 0)
+                    context.Response.OutputStream.WriteByte(CharToByte(','));
             }
+            context.Response.OutputStream.WriteByte(CharToByte(']'));
         }
 
 
