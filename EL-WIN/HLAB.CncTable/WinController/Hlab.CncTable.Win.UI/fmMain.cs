@@ -36,11 +36,11 @@ namespace Hlab.CncTable.Win.UI
             Program.TcpServer.OnClientState += TcpServerOnClientState;
             Program.TcpServer.OnServerState += TcpServerOnServerState;
             Program.SerialPort.OnStateChange += UART_Server_OnStateChange;
-            Program.HttpServer.OnServerState += HttpServerOnServerState;
+            Program.HttpServer.OnConnect += HttpServer_OnConnect;
             Program.HttpServer.OnData += HttpServer_OnData;
             CncController.Poll();
             TcpServerChangeState(Program.TcpServer.State);
-            HttpServerChangeState(Program.HttpServer.State);
+            //HttpServerChangeState(Program.HttpServer.State);
             lblSerialStatus.Text += " (" + Program.SerialPort.PortName + ") ";
             ChangeState(Program.SerialPort.GetState());
         }
@@ -118,6 +118,15 @@ namespace Hlab.CncTable.Win.UI
         protected void TcpClientChangeState(string state)
         {
             log.AppendText("TCP>> " + state);
+        }
+
+
+
+        bool HttpServer_OnConnect(HttpListenerContext context)
+        {
+            lblHttpState.ForeColor = Color.Green;
+            lblHttpState.Text = "Connected " + Program.HttpServer.Port;
+            return false;
         }
 
         protected void HttpServerChangeState(HttpServerState state)

@@ -14,7 +14,7 @@ namespace Hlab.CncTable.Win.UI
     {
 
         public static HardwareTcpServer TcpServer;
-        public static HardwareHttpServer HttpServer;
+        public static SmallHttpServer HttpServer;
         public static SerialAddressedManager SerialPort;
         public static CncController Controller;
         /// <summary>
@@ -30,10 +30,9 @@ namespace Hlab.CncTable.Win.UI
             var httpPort = Convert.ToInt32(settings["HTTP_PORT"]);
             var cncAddr = Convert.ToByte(settings["CNC_ADDR"]);
             SerialPort = new SerialAddressedManager(port, speed);
-            SerialPort.PACKET_END_BYTE = (int)ASCII.EOT;
             SerialPort.DeviceAddr = cncAddr;
-            SerialPort.Connect();
-            HttpServer = new HardwareHttpServer(httpPort);
+            //SerialPort.Connect();
+            HttpServer = new SmallHttpServer(httpPort);
             HttpServer.Start();
             TcpServer = new HardwareTcpServer(tcpPort);
             TcpServer.Start();

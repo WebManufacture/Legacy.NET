@@ -60,6 +60,7 @@ namespace MRS.Hardware.Server
         public static void ProcessMessage(byte[] data, SerialManager manager)
         {
             MotorState obj = MotorState.Deserialize(data);
+            WriteLog(obj);
             if (obj != null)
             {
                 /*if (!initialized && LastState != null)
@@ -92,6 +93,7 @@ namespace MRS.Hardware.Server
                 }
             }
         }
+
         
         public static bool SendCommand(MotorCommand command)
         {
@@ -167,7 +169,6 @@ namespace MRS.Hardware.Server
             CncController.cfgPath = cfgPath;
             CncAddress = cncAddress;
             Uart = serialPort;
-            Uart.Connect();
             Uart.OnReceive += ProcessMessage;
             if (!File.Exists(cfgPath + "\\config.json"))
             {
@@ -189,6 +190,14 @@ namespace MRS.Hardware.Server
             }
             initialized = true;
             
+        }
+
+
+        private static void WriteLog(MotorState obj)
+        {
+            StreamWriter writer = new StreamWriter("log.txt", true, Encoding.UTF8);
+            writer.WriteLine(obj.ToString());
+            writer.Close();
         }
 
         public static void Poll()
