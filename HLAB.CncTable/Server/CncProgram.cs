@@ -46,6 +46,7 @@ namespace MRS.Hardware.Server
             {
                 Commands[i].line = i + 1;
             }
+            CncController.OnMessage += CncControllerOnOnMessage;
         }
 
         public void Start()
@@ -54,7 +55,6 @@ namespace MRS.Hardware.Server
             {
                 State = CncProgramState.Running;
                 CurrentLine = -1;
-                CncController.OnMessage += CncControllerOnOnMessage;
                 NextCommand();
             }
         }
@@ -64,7 +64,6 @@ namespace MRS.Hardware.Server
             CurrentLine = Commands.Length;
             if (OnStateChange != null)
             {
-                CncController.OnMessage -= CncControllerOnOnMessage;
                 State = CncProgramState.Completed;
             }
         }
@@ -74,7 +73,6 @@ namespace MRS.Hardware.Server
             CurrentLine = Commands.Length;
             if (OnStateChange != null)
             {
-                CncController.OnMessage -= CncControllerOnOnMessage;
                 State = CncProgramState.Aborted;
             }
         }
@@ -100,21 +98,25 @@ namespace MRS.Hardware.Server
 
         private void CncControllerOnOnMessage(MotorState obj)
         {
-            if (obj.Command == CommandType.Stop)
+            if (state != CncProgramState.NotStarted && state != CncProgramState.Aborted)
             {
-                Abort();
-                 return;
-            }
-            if (obj.line > 0)
-            {
-                switch (obj.State){
-                    case CncState.Completed:
-                        NextCommand(obj);
-                        break;
-                    case CncState.Error:
-                    case CncState.Aborted:
-                        Stop();
-                    break;
+                if (obj.Command == CommandType.Stop)
+                {
+                    Abort();
+                    return;
+                }
+                if (obj.line > 0)
+                {
+                    switch (obj.State)
+                    {
+                        case CncState.Completed:
+                            NextCommand(obj);
+                            break;
+                        case CncState.Error:
+                        case CncState.Aborted:
+                            Stop();
+                            break;
+                    }
                 }
             }
         }
