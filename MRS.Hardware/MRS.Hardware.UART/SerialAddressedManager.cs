@@ -19,7 +19,9 @@ namespace MRS.Hardware.UART
             this.ReceiveBroadcast = receiveBroadcast;
         }
         
-        public SerialAddressedManager(SerialPort port) : base(port) { }
+        public SerialAddressedManager(SerialPort port) : base(port) {
+        
+        }
 
         public SerialAddressedManager(SerialConfig config) : base(config) { }
 
