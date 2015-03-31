@@ -45,7 +45,7 @@ namespace MRS.Hardware.UI.Analyzer
 
         private void Start()
         {
-            manager.Send(42);
+            manager.Send(45);
             Started = true;
         }
         
@@ -111,9 +111,9 @@ namespace MRS.Hardware.UI.Analyzer
                // txtValue.Text = "";
                 for (var i = 0; i < 6; i++)
                 {
-                    int val = bytes[i*2];
+                    int val = bytes[i*2 + 4]; //4 - байты адреса
                     val = (val << 2);
-                    val = val + (bytes[i * 2 + 1] >> 6);
+                    val = val + (bytes[i * 2 + 1 + 4] >> 6);
                     var last = data[data.GetUpperBound(0) - 1, i];
                     if (counter > 0)
                     {

@@ -125,6 +125,7 @@ namespace MRS.Hardware.UART
         public List<XDevice> KnownDevices = new List<XDevice>();
         public event OnReceiveXPacketHandler OnReceiveXPacket;
         public byte LastDeviceAddr;
+        protected SerialConfig serialConfig;
         
         public XRoutingManager(byte deviceAddr, bool receiveBroadcast) : base() {
             this.DeviceAddr = deviceAddr;
@@ -237,7 +238,7 @@ namespace MRS.Hardware.UART
                 SourceType = 0
             });
         }
-
+        
         private void _msg_routing_GiveFactoryNum(XPacket packet, XRoutingManager manager)
         {
             if (packet.SourceAddr == 0 && packet.DestinationType == 1)
@@ -351,5 +352,18 @@ namespace MRS.Hardware.UART
                });
         }
 
+    }
+
+    public class XRSerialConfig : SerialConfig
+    {
+        public byte DeviceAddr = 0;
+        public string FirmwareStr;
+
+
+        public XRSerialConfig()
+            : base()
+        {
+
+        }
     }
 }

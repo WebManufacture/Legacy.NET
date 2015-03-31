@@ -11,8 +11,6 @@ namespace MRS.Hardware.UART
 {
     public class SerialManager
     {
-        static bool Worked = false;
-
         public static string[] GetPorts()
         {
             return SerialPort.GetPortNames();
@@ -93,6 +91,15 @@ namespace MRS.Hardware.UART
             OnLoad();
         }
 
+
+        public SerialPort Device
+        {
+            get
+            {
+                return device;
+            }
+        }
+
         public SerialManager(SerialPort port) : this()
         {
             device = port;
@@ -140,13 +147,13 @@ namespace MRS.Hardware.UART
         public virtual bool Connect()
         {
             var res = connect();
-            if (Worked) throw new Exception("WORKED!");
-            Worked = true;
+            if (res != "ok") return false;
+            if (worker != null) throw new Exception("WORKED!");
             worker = new BackgroundWorker();
             worker.WorkerSupportsCancellation = true;
             worker.DoWork += new DoWorkEventHandler(worker_DoSimpleWork);
             worker.RunWorkerAsync();
-            return res == "ok";
+            return true;
         }
 
         public bool IsOpened
@@ -355,7 +362,7 @@ namespace MRS.Hardware.UART
 
                 }
                 worker.Dispose();
-                Worked = false;
+                worker = null;
             }
             if (StateTimer != null)
             {
