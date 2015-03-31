@@ -255,7 +255,7 @@ namespace MRS.Hardware.UART_HTTP_bribge
                     
                     break;
                 default:
-                    sm = new SerialManager(cfg);
+                    sm = new SerialManager(cfgBase);
                     break;
             }
             if (cfg == null)
