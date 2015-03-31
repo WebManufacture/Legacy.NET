@@ -15,6 +15,7 @@
     {
         "DeviceName": "CNC",
         "PortName": "COM3",
+        "AutoConnect" : false,
         "Speed": 115200,
         "DataBits": 8,
         "Parity": 0,
@@ -28,6 +29,7 @@
     {
         "DeviceName": "RoboAnalyzer",
         "PortName": "COM2",
+        "AutoConnect" : false,
         "Speed": 921600,
         "DataBits": 8,
         "Parity": 0,
@@ -41,6 +43,7 @@
     {
         "DeviceName": "FTDI",
         "PortName": "COM5",
+        "AutoConnect" : false,
         "Speed": 115200,
         "DataBits": 8,
         "Parity": 0,
