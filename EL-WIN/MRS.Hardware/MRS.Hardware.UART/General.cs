@@ -10,13 +10,14 @@ namespace MRS.Hardware.UART
 
     public enum EDeviceState
     {
-        Unknown,
-        PortOpen,        
+        Unknown,        
         Error,
         Offline,
-        Busy,
+        PortOpen,
         Online,
-        Working
+        Working,
+        Busy
+        
     }
 
     public enum UARTWritingState

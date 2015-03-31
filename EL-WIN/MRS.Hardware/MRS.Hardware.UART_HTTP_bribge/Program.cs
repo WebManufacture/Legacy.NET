@@ -150,10 +150,7 @@ namespace MRS.Hardware.UART_HTTP_bribge
             
             foreach (var cfg in serverInfo.Configs)
             {
-                if (AddPort(cfg))
-                {
-                    ComPortConfigs.Add(cfg);
-                }
+                var config = AddPort(cfg, cfg.AutoConnect);
             }
 
             Log("HTTP: " + serverInfo.HttpInterface);
@@ -212,59 +209,91 @@ namespace MRS.Hardware.UART_HTTP_bribge
             return cfg;
         }
 
-        protected static bool AddPort(SerialConfig cfg)
+        protected static SerialConfig AddPort(SerialConfig cfgBase, bool autoConnect)
         {
-            if (Serials.ContainsKey(cfg.PortName))
+            if (Serials.ContainsKey(cfgBase.PortName))
             {
                 //Serials[cfg.PortName].SetParams((uint)cfg.Speed, cfg.DataBits, cfg.StopBits, cfg.Parity);
-                if (!Serials[cfg.PortName].IsOpened)
+                if (autoConnect && !Serials[cfgBase.PortName].IsOpened)
                 {
-                    Serials[cfg.PortName].Connect();
+                    Serials[cfgBase.PortName].Connect();
                 }
-                return false;
+                return cfgBase;
             }
+            var cfg = ComPortConfigs.FirstOrDefault(s => s.PortName == cfgBase.PortName);
+            SerialConfig cfgNew = null;
             SerialManager sm;
-            switch (cfg.RxPacketType)
+            switch (cfgBase.RxPacketType)
             {
                 case PacketType.SimpleCoded:
                 case PacketType.SimpleCRC: throw new NotImplementedException("PacketType.SimpleCRC have no manager today!");
                 case PacketType.Sized:
-                    sm = new SerialPacketManager(cfg);
+                    sm = new SerialPacketManager(cfgBase);
                     break;
                 case PacketType.SizedOld:
-                    sm = new SerialPacketManager(cfg);
+                    sm = new SerialPacketManager(cfgBase);
                     break;
                 case PacketType.Addressed:
-                    sm = new SerialAddressedManager(cfg);
+                    sm = new SerialAddressedManager(cfgBase);
                     (sm as SerialAddressedManager).DeviceAddr = 0xAA;
                     break;
                 case PacketType.AddressedOld:
-                    sm = new SerialAddressedManager(cfg);
+                    sm = new SerialAddressedManager(cfgBase);
                     break;
                 case PacketType.XRouting:
-                    sm = new XRoutingManager(cfg);
+                    /*if (cfg == null)
+                    {
+                        cfgNew = new XRSerialConfig(cfgBase);
+                        sm = new XRoutingManager(cfgNew as XRSerialConfig);
+                    }
+                    else
+                    {
+                        sm = new XRoutingManager(cfg as XRSerialConfig);
+                    }   */
+                    sm = new XRoutingManager(cfgBase);
                     (sm as XRoutingManager).DeviceAddr = 0xAB;
+                    
                     break;
                 default:
                     sm = new SerialManager(cfg);
                     break;
+            }
+            if (cfg == null)
+            {
+                if (cfgNew != null)
+                {
+                    ComPortConfigs.Add(cfgNew);
+                    cfg = cfgNew;
+                }
+                else
+                {
+                    ComPortConfigs.Add(cfgBase);
+                    cfg = cfgBase;
+                }
             }
             Log(cfg);
             sm.OnReceive += serial_OnReceive;
             sm.OnSend += sm_OnSend;
             sm.OnError += serial_OnError;
             sm.OnStateChange += serial_OnStateChange;
-            if (!sm.Connect())
+            if (autoConnect)
             {
-                Warn("Can't connect " + cfg.PortName);
-                sm.OnReceive -= serial_OnReceive;
-                sm.OnSend -= sm_OnSend;
-                sm.OnError -= serial_OnError;
-                sm.OnStateChange -= serial_OnStateChange;
-                return false;
+                if (sm.Connect())
+                {
+                    Serials.Add(cfg.PortName, sm);
+                    return cfg;
+                }
+                else
+                {
+                    Warn("Can't connect " + cfg.PortName);
+                    sm.OnReceive -= serial_OnReceive;
+                    sm.OnSend -= sm_OnSend;
+                    sm.OnError -= serial_OnError;
+                    sm.OnStateChange -= serial_OnStateChange;
+                    return null;
+                }
             }
-            Serials.Add(cfg.PortName, sm);
-            return true;
+            return cfg;
         }
 
         private static void Info(string msg)
@@ -300,6 +329,38 @@ namespace MRS.Hardware.UART_HTTP_bribge
             Console.ResetColor();
         }
 
+        public static SerialConfig PortOpen(string portName, uint speed)
+        {
+            var cfg = ComPortConfigs.FirstOrDefault(s => s.PortName == portName);
+            if (Serials.ContainsKey(portName))
+            {
+                if (cfg == null) throw new Exception("Port " + portName + " opened, but config doesn't exists");
+                if (Serials[portName].IsOpened)
+                {
+                    return cfg;
+                }
+                else
+                {
+                    Serials[portName].Close();
+                }                
+            }
+            if (cfg == null)
+            {
+                cfg = new SerialConfig();
+                cfg.PortName = portName;
+                if (speed > 0)
+                {
+                    cfg.Speed = speed;
+                }
+            }
+            if (AddPort(cfg, true) == null)
+            {
+                throw new Exception("Can't open port " + portName);
+            }
+            return cfg;
+        }
+
+
         private static bool Send(SerialPacket packet)
         {
             return Send(packet.PortName, packet.Data, null, true);
@@ -321,10 +382,18 @@ namespace MRS.Hardware.UART_HTTP_bribge
             try
             {
 
-                if (serial.State >= UART.EDeviceState.PortOpen && serial.State < UART.EDeviceState.Offline)
+                if (serial.State >= UART.EDeviceState.PortOpen)
                 {
+                    if (serial.State == UART.EDeviceState.Busy)
+                    {
+                        serial_OnError(new Exception("Port busy"), serial);
+                        return false;
+                    }
                     serial.PreventSendingEvent = true;
-                    serial.Send(data);
+                    if (!serial.Send(data)){
+                        serial_OnError(new Exception("Can't sent to port"), serial);
+                        return false;
+                    }
                     serial.PreventSendingEvent = false;
                     var sessions = GetSessions(serial.PortName);
                     var segment = getMessage(portName, SerialDirection.ToUART, data);
@@ -342,6 +411,11 @@ namespace MRS.Hardware.UART_HTTP_bribge
                     {
                         tcpService.Send(segment);
                     }
+                }
+                else
+                {
+                    serial_OnError(new Exception("Sending to offline port"), serial);
+                    return false;
                 }
             }
             catch (Exception err)
@@ -362,6 +436,13 @@ namespace MRS.Hardware.UART_HTTP_bribge
             return (new SerialPacketSerialization(portName, data, direction)).Serialize();
         }
 
+
+
+
+        //--------------------------------------------------------------------------------------------------
+        //--------------------------------WS     --------------------------------------------------
+        //--------------------------------------------------------------------------------------------------
+
         private static void socketServer_NewSessionConnected(WebSocketSession session)
         {
             var portName = session.Path.Replace("/", "");
@@ -369,14 +450,15 @@ namespace MRS.Hardware.UART_HTTP_bribge
             {
                 portName = portName.Replace("/", "");
                 Info("Sock client " + session.SessionID + " connected with path " + portName);
-                if (Serials.ContainsKey(portName))
+                try
                 {
+                    var cfg = PortOpen(portName, 0);
+                    session.Send(JsonConvert.SerializeObject(cfg));
                     session.Path = portName;
                     return;
                 }
-                else
-                {
-                    session.Send("port not open!");
+                catch (Exception e){
+                    session.Send("{ \"error\": \"" + e.Message + "\"}");
                 }
             }
             else
@@ -397,8 +479,8 @@ namespace MRS.Hardware.UART_HTTP_bribge
             Log("WS: " + DateTime.Now.ToString("hh:mm:ss.f") + " --> " + value);
             try
             {
-                var packet = JsonConvert.DeserializeObject<SerialPacket>(value);
-                Send(packet, thisSession);
+                var packet = JsonConvert.DeserializeObject<byte[]>(value);
+                Send(thisSession.Path, packet, thisSession, false);
             }
             catch (Exception e)
             {
@@ -436,7 +518,7 @@ namespace MRS.Hardware.UART_HTTP_bribge
                 serial_OnError(e, null);
             }
         }
-
+        
 
         private static bool httpServer_OnConnect(HttpListenerContext context)
         {
@@ -446,31 +528,26 @@ namespace MRS.Hardware.UART_HTTP_bribge
             {
                 portName = portName.Replace("/", "");
             }
-            else
+            if (portName == "")
             {
                 var info = Encoding.UTF8.GetBytes(GetServerInfo());
                 context.Response.OutputStream.Write(info, 0, info.Length);
                 context.Response.Close();
                 return true;
             }
-            var cfg = ComPortConfigs.FirstOrDefault(s => s.PortName == portName);
-            if (cfg != null)
-            {
-                cfg = new SerialConfig();
-                cfg.PortName = portName;
-                cfg.Speed = UInt32.Parse(context.Request.QueryString["speed"]);
-                if (AddPort(cfg))
-                {
-                    ComPortConfigs.Add(cfg);
-                }
-            }
-            var dta = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(serverInfo));
+            byte[] dta = null;
+            var speed = context.Request.QueryString["speed"] + "";
+            if (speed == null || speed == "") speed = "0";
+            var cfg = PortOpen(portName, UInt32.Parse(speed)); 
+            dta = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(cfg));
             context.Response.OutputStream.Write(dta, 0, dta.Length);
             context.Response.Close();
             return true;
         }
 
 
+        //--------------------------------------------------------------------------------------------------
+        //--------------------------------  TCP           --------------------------------------------------
         //--------------------------------------------------------------------------------------------------
 
 
@@ -570,6 +647,7 @@ namespace MRS.Hardware.UART_HTTP_bribge
             }
             if (state == EDeviceState.Offline)
             {
+                Serials.Remove(sm.PortName);
                 Warn(sm.PortName + " -> " + state);
                 return;
             }
