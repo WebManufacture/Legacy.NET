@@ -132,8 +132,8 @@ namespace MRS.Hardware.UART_HTTP_bribge
         static int Main(string[] args)
         {
             Console.BufferHeight = 10000;
-            Console.BufferWidth = 160;
-            Console.WindowWidth = 160;
+            Console.BufferWidth = 110;
+            Console.WindowWidth = 110;
             Console.WindowHeight = 60;
 
 
