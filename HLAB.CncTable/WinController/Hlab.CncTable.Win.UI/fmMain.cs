@@ -16,8 +16,6 @@ using CommandType = MRS.Hardware.Server.CommandType;
 
 namespace Hlab.CncTable.Win.UI
 {
-
-
     public partial class fmMain : Form
     {
         public fmMain()
@@ -26,7 +24,14 @@ namespace Hlab.CncTable.Win.UI
         }
 
         fmControl controlForm;
+        fmLogs logWindow;
         CncProgram currentProgramm = null;
+
+
+        protected int step = 100;
+        protected ushort speedX = 1000;
+        protected ushort speedY = 1000;
+        protected ushort speedZ = 1000;
 
         private void fmMain_Load(object sender, EventArgs e)
         {
@@ -43,6 +48,20 @@ namespace Hlab.CncTable.Win.UI
             //HttpServerChangeState(Program.HttpServer.State);
             lblSerialStatus.Text += " (" + Program.SerialPort.PortName + ") ";
             ChangeState(Program.SerialPort.GetState());
+
+            speedX = (ushort)numXSpeed.Value;
+            speedY = (ushort)numYSpeed.Value;
+            speedZ = (ushort)numZSpeed.Value;
+
+            lblSteps.Text = step + "";
+        }
+
+        void log(string msg)
+        {
+            if (logWindow != null)
+            {
+                logWindow.Log(msg);
+            }
         }
 
         void HttpServer_OnData(string data, HttpListenerContext context)
@@ -70,11 +89,7 @@ namespace Hlab.CncTable.Win.UI
                 str += " " + cc.z;
                 str += " " + cc.speed;
             }
-            if (log.Lines.Length > 60)
-            {
-                log.Lines[log.Lines.Length - 1] = null;
-            }
-            log.Text = (str + "\n") + log.Text;
+            log(str);
         }
 
         protected void ChangeState(EDeviceState state)
@@ -117,7 +132,7 @@ namespace Hlab.CncTable.Win.UI
 
         protected void TcpClientChangeState(string state)
         {
-            log.AppendText("TCP>> " + state);
+            log("TCP>> " + state);
         }
 
 
@@ -216,7 +231,7 @@ namespace Hlab.CncTable.Win.UI
                 }
                 point = new Point(dState.x/5, dState.y/5);
                 color = Color.Green;
-                pBox.Refresh();
+                //pBox.Refresh();
                 lblA.Text = dState.stateA.ToString();
                 lblB.Text = dState.stateB.ToString();
             }
@@ -426,7 +441,7 @@ namespace Hlab.CncTable.Win.UI
 
         private void clearToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            log.Clear();
+            
         }
 
         private void pollToolStripMenuItem_Click(object sender, EventArgs e)
@@ -457,6 +472,336 @@ namespace Hlab.CncTable.Win.UI
             dc.DrawLine(pen, lpoint, point);
             lpoint = point;
         }
+
+        private void showToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (logWindow == null)
+            {
+                logWindow = new fmLogs();
+                logWindow.FormClosed += logWindow_FormClosed;
+                logWindow.Show();
+            }
+            else
+            {
+                logWindow.Show();
+            }
+        }
+
+        void logWindow_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            logWindow = null;
+        }
+
+
+        private void btnUp_Click(object sender, EventArgs e)
+        {
+            if (CncController.LastState != null && !CncController.InMove && CncController.Ready)
+            {
+                var command = new MotorCommand(MRS.Hardware.Server.CommandType.Move);
+                command.x = 0;
+                command.y = 0 + step;
+                command.z = 0;
+                command.speed = speedX;
+                command.paramA = 8;
+                command.paramB = chkWaitHardwareStop.Checked ? (byte)16 : (byte)0;
+                CncController.SendCommand(command);
+            }
+        }
+
+        private void btnDown_Click(object sender, EventArgs e)
+        {
+            if (CncController.LastState != null && !CncController.InMove && CncController.Ready)
+            {
+                var command = new MotorCommand(MRS.Hardware.Server.CommandType.Move);
+                command.x = 0;
+                command.y = 0 - step;
+                command.z = 0;
+                command.speed = speedX;
+                command.paramA = 16;
+                command.paramB = chkWaitHardwareStop.Checked ? (byte)16 : (byte)0;
+                CncController.SendCommand(command);
+            }
+        }
+
+        private void btnRight_Click(object sender, EventArgs e)
+        {
+            if (CncController.LastState != null && !CncController.InMove && CncController.Ready)
+            {
+                var command = new MotorCommand(MRS.Hardware.Server.CommandType.Move);
+                command.x = 0 + step;
+                command.y = 0;
+                command.z = 0;
+                command.speed = speedY;
+                command.paramA = 32;
+                command.paramB = chkWaitHardwareStop.Checked ? (byte)16 : (byte)0;
+                CncController.SendCommand(command);
+            }
+        }
+
+        private void btnLeft_Click(object sender, EventArgs e)
+        {
+            if (CncController.LastState != null && !CncController.InMove && CncController.Ready)
+            {
+                var command = new MotorCommand(MRS.Hardware.Server.CommandType.Move);
+                command.x = 0 - step;
+                command.y = 0;
+                command.z = 0;
+                command.speed = speedY;
+                command.paramA = 64;
+                command.paramB = chkWaitHardwareStop.Checked ? (byte)16 : (byte)0;
+                CncController.SendCommand(command);
+            }
+        }
+
+        private void fmControl_KeyDown(object sender, KeyEventArgs e)
+        {
+            step = 100;
+            if (e.Shift)
+            {
+                step = 1000;
+                lblSteps.Text = step.ToString();
+            }
+            if (e.Control)
+            {
+                step = 10;
+                lblSteps.Text = step.ToString();
+            }
+            if (e.KeyCode == Keys.NumPad8)
+            {
+                var cl = btnUp.BackColor;
+                btnUp.BackColor = Color.Yellow;
+                btnUp_Click(null, e);
+                btnUp.BackColor = cl;
+                e.Handled = true;
+            }
+            if (e.KeyCode == Keys.NumPad6)
+            {
+                var cl = btnRight.BackColor;
+                btnRight.BackColor = Color.Yellow;
+                btnRight_Click(null, e);
+                btnRight.BackColor = cl;
+                e.Handled = true;
+            }
+            if (e.KeyCode == Keys.NumPad4)
+            {
+                var cl = btnLeft.BackColor;
+                btnLeft.BackColor = Color.Yellow;
+                btnLeft_Click(null, e);
+                btnLeft.BackColor = cl;
+                e.Handled = true;
+            }
+            if (e.KeyCode == Keys.NumPad2)
+            {
+                var cl = btnDown.BackColor;
+                btnDown.BackColor = Color.Yellow;
+                btnDown_Click(null, e);
+                btnDown.BackColor = cl;
+                e.Handled = true;
+            }
+        }
+
+        private void btnBottom_Enter(object sender, EventArgs e)
+        {
+            this.Focus();
+        }
+
+        private void btnTop_Click(object sender, EventArgs e)
+        {
+            if (CncController.LastState != null && !CncController.InMove)
+            {
+                var command = new MotorCommand(MRS.Hardware.Server.CommandType.Move);
+                command.X = 0;
+                command.Y = 0;
+                command.Z = 0 - step;
+                command.Speed = speedZ;
+                command.paramB = (byte)(8 | (chkWaitHardwareStop.Checked ? 16 : 0));
+                CncController.SendCommand(command);
+            }
+        }
+
+        private void btnBottom_Click(object sender, EventArgs e)
+        {
+            if (CncController.LastState != null && !CncController.InMove)
+            {
+                var command = new MotorCommand(MRS.Hardware.Server.CommandType.Move);
+                command.X = 0;
+                command.Y = 0;
+                command.Z = 0 + step;
+                command.Speed = speedZ;
+                command.paramB = (byte)(8 | (chkWaitHardwareStop.Checked ? 16 : 0));
+                CncController.SendCommand(command);
+            }
+        }
+
+        private void btnSpindle_Click(object sender, EventArgs e)
+        {
+            if (CncController.SpindleState)
+            {
+                CncController.Spindle(false);
+                btnSpindle.BackColor = Color.Gray;
+            }
+            else
+            {
+                CncController.Spindle(true);
+                btnSpindle.BackColor = Color.Orange;
+            }
+        }
+
+        private void btnRange_Click(object sender, EventArgs e)
+        {
+            step = Int32.Parse((sender as Button).Text);
+            lblSteps.Text = step.ToString();
+        }
+
+        private void numZSpeed_ValueChanged(object sender, EventArgs e)
+        {
+            speedX = (ushort)numXSpeed.Value;
+            speedY = (ushort)numYSpeed.Value;
+            speedZ = (ushort)numZSpeed.Value;
+        }
+
+
+        private void button11_Click(object sender, EventArgs e)
+        {
+            if (CncController.LastState != null && !CncController.InMove)
+            {
+                var command = new MotorCommand(MRS.Hardware.Server.CommandType.Go);
+                command.X = 0;
+                command.Y = 0;
+                command.Z = 0;
+                command.Speed = 7000;
+                command.paramB = chkWaitHardwareStop.Checked ? (byte)16 : (byte)0;
+                CncController.SendCommand(command);
+            }
+        }
+
+        private void button12_Click(object sender, EventArgs e)
+        {
+            if (CncController.LastState != null && !CncController.InMove)
+            {
+                var command = new MotorCommand(MRS.Hardware.Server.CommandType.Move);
+                command.X = 0 + step;
+                command.Y = 0 + step;
+                command.Z = 0;
+                command.Speed = (ushort)((speedX + speedY) / 2);
+                command.paramA = 32 + 8;
+                command.paramB = chkWaitHardwareStop.Checked ? (byte)16 : (byte)0;
+                CncController.SendCommand(command);
+            }
+        }
+
+
+        private void button13_Click(object sender, EventArgs e)
+        {
+            if (CncController.LastState != null && !CncController.InMove)
+            {
+                var command = new MotorCommand(MRS.Hardware.Server.CommandType.Move);
+                command.X = 0 + step;
+                command.Y = 0 - step;
+                command.Z = 0;
+                command.Speed = (ushort)((speedX + speedY) / 2);
+                command.paramA = 32 + 16;
+                command.paramB = chkWaitHardwareStop.Checked ? (byte)16 : (byte)0;
+                CncController.SendCommand(command);
+            }
+        }
+
+        private void button6_Click(object sender, EventArgs e)
+        {
+            if (CncController.LastState != null && !CncController.InMove)
+            {
+                var command = new MotorCommand(MRS.Hardware.Server.CommandType.Move);
+                command.X = 0 - step;
+                command.Y = 0 - step;
+                command.Z = 0;
+                command.Speed = (ushort)((speedX + speedY) / 2);
+                command.paramA = 64 + 16;
+                command.paramB = chkWaitHardwareStop.Checked ? (byte)16 : (byte)0;
+                CncController.SendCommand(command);
+            }
+        }
+
+        private void button7_Click(object sender, EventArgs e)
+        {
+            if (CncController.LastState != null && !CncController.InMove)
+            {
+                var command = new MotorCommand(MRS.Hardware.Server.CommandType.Move);
+                command.X = 0 - step;
+                command.Y = 0 + step;
+                command.Z = 0;
+                command.Speed = (ushort)((speedX + speedY) / 2);
+                command.paramA = 64 + 8;
+                command.paramB = chkWaitHardwareStop.Checked ? (byte)16 : (byte)0;
+                CncController.SendCommand(command);
+            }
+        }
+
+        private void btnStopControl_Click(object sender, EventArgs e)
+        {
+
+            CncController.Stop();
+        }
+
+        private void btnUpEnd_Click(object sender, EventArgs e)
+        {
+            if (CncController.LastState != null && !CncController.InMove)
+            {
+                var command = new MotorCommand(MRS.Hardware.Server.CommandType.Move);
+                command.X = 0;
+                command.Y = 99999999;
+                command.Z = 0;
+                command.Speed = speedX;
+                command.paramA = 8;
+                command.paramB = chkWaitHardwareStop.Checked ? (byte)16 : (byte)0;
+                CncController.SendCommand(command);
+            }
+        }
+
+        private void btnDownEnd_Click(object sender, EventArgs e)
+        {
+            if (CncController.LastState != null && !CncController.InMove)
+            {
+                var command = new MotorCommand(MRS.Hardware.Server.CommandType.Move);
+                command.X = 0;
+                command.Y = -99999999;
+                command.Z = 0;
+                command.Speed = speedX;
+                command.paramA = 16;
+                command.paramB = chkWaitHardwareStop.Checked ? (byte)16 : (byte)0;
+                CncController.SendCommand(command);
+            }
+        }
+
+        private void btnLeftEnd_Click(object sender, EventArgs e)
+        {
+            if (CncController.LastState != null && !CncController.InMove)
+            {
+                var command = new MotorCommand(MRS.Hardware.Server.CommandType.Move);
+                command.X = -99999999;
+                command.Y = 0;
+                command.Z = 0;
+                command.Speed = speedY;
+                command.paramA = 64;
+                command.paramB = chkWaitHardwareStop.Checked ? (byte)16 : (byte)0;
+                CncController.SendCommand(command);
+            }
+        }
+
+        private void btnRightEnd_Click(object sender, EventArgs e)
+        {
+            if (CncController.LastState != null && !CncController.InMove)
+            {
+                var command = new MotorCommand(MRS.Hardware.Server.CommandType.Move);
+                command.X = 99999999;
+                command.Y = 0;
+                command.Z = 0;
+                command.Speed = speedY;
+                command.paramA = 32;
+                command.paramB = chkWaitHardwareStop.Checked ? (byte)16 : (byte)0;
+                CncController.SendCommand(command);
+            }
+        }
+
 
        /* private void lblHttpConnection_Click(object sender, EventArgs e)
         {

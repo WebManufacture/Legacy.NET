@@ -43,6 +43,7 @@ namespace Hlab.CncTable.Win.UI
                 command.y = 0 + step;
                 command.z = 0;
                 command.speed = speedX;
+                command.paramA = 8;
                 CncController.SendCommand(command);
             }
         }
@@ -56,6 +57,7 @@ namespace Hlab.CncTable.Win.UI
                 command.y = 0 - step;
                 command.z = 0;
                 command.speed = speedX;
+                command.paramA = 16;
                 CncController.SendCommand(command);
             }
         }
@@ -69,6 +71,7 @@ namespace Hlab.CncTable.Win.UI
                 command.y = 0;
                 command.z = 0;
                 command.speed = speedY;
+                command.paramA = 32;
                 CncController.SendCommand(command);
             }
         }
@@ -82,6 +85,7 @@ namespace Hlab.CncTable.Win.UI
                 command.y = 0;
                 command.z = 0;
                 command.speed = speedY;
+                command.paramA = 64;
                 CncController.SendCommand(command);
             }
         }
@@ -160,6 +164,7 @@ namespace Hlab.CncTable.Win.UI
                 command.Y = 0;
                 command.Z = 0 + step;
                 command.Speed = speedZ;
+                command.paramB = 8;
                 CncController.SendCommand(command);
             }
         }
